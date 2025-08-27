@@ -9,7 +9,7 @@ A gleam package to keep code on the happy path with `<- use`.
 gleam add on@1
 ```
 
-A first example:
+#### Example 1
 
 ```gleam
 import gleam/float
@@ -60,7 +60,7 @@ pub fn parse_number_and_optional_css_unit(
 }
 ```
 
-A second example:
+#### Example 2
 
 ```gleam
 import gleam/io
