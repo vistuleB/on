@@ -3,6 +3,8 @@
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
+A gleam package to keep code on the happy path with `<- use`.
+
 ```sh
 gleam add on@1
 ```
@@ -12,6 +14,7 @@ A first example:
 ```gleam
 import gleam/float
 import gleam/int
+import gleam/option.{type Option, None, Some}
 import gleam/string
 import on
 
