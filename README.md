@@ -7,10 +7,27 @@
 gleam add on@1
 ```
 ```gleam
+import gleam/io
+import gleam/string
 import on
+import simplifile
+
+fn read_file(path: String) -> Result(String, String) {
+  use e <- on.error(simplifile.read(path))
+  Error("simplifile FileError: " <> string.inspect(e))
+}
 
 pub fn main() -> Nil {
-  // TODO: An example of the project in use
+  use contents <- on.error_ok(
+    read_file("./sample.txt"),
+    on_error: fn(msg) {
+      io.println("")
+      io.println(msg)
+    }
+  )
+  io.println("contents obtained:")
+  io.println("")
+  io.println(contents)
 }
 ```
 
