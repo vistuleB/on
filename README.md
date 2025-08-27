@@ -7,9 +7,14 @@
 gleam add on@1
 ```
 
-Example 1:
+A first example:
 
 ```gleam
+import gleam/float
+import gleam/int
+import gleam/string
+import on
+
 type CSSUnit {
   PX
   REM
@@ -52,7 +57,7 @@ pub fn parse_number_and_optional_css_unit(
 }
 ```
 
-Example 2:
+A second example:
 
 ```gleam
 import gleam/io
