@@ -80,12 +80,12 @@ pub fn main() -> Nil {
 
   use first, rest <- on.lazy_empty_nonempty(
     string.split(contents, "\n"),
-    on_empty: io.println("empty contents"),
+    on_empty: fn() {io.println("empty contents")},
   )
 
   use <- on.lazy_false_true(
     string.trim(first) == "<!DOCTYPE html>",
-    on_false: io.println("expecting DOCTYPE in first line"),
+    on_false: fn() {io.println("expecting DOCTYPE in first line")},
   )
 
   use parse_tree <- on.error_ok(
