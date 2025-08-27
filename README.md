@@ -6,6 +6,54 @@
 ```sh
 gleam add on@1
 ```
+
+Example 1:
+
+```gleam
+type CSSUnit {
+  PX
+  REM
+  EM
+}
+
+fn extract_css_unit(s: String) -> #(String, Option(CSSUnit)) {
+  use <- on.true_false(
+    string.ends_with(s, "rem"),
+    on_true: #(string.drop_end(s, 3), Some(REM)),
+  )
+
+  use <- on.true_false(
+    string.ends_with(s, "em"),
+    on_true: #(string.drop_end(s, 2), Some(EM)),
+  )
+
+  use <- on.true_false(
+    string.ends_with(s, "px"),
+    on_true: #(string.drop_end(s, 2), Some(PX)),
+  )
+
+  #(s, None)
+}
+
+fn parse_to_float(s: String) -> Result(Float, Nil) {
+  case float.parse(s), int.parse(s) {
+    Ok(number), _ -> Ok(number)
+    _, Ok(number) -> Ok(int.to_float(number))
+    _, _ -> Error(Nil)
+  }
+}
+
+pub fn parse_number_and_optional_css_unit(
+  s: String
+) -> Result(#(Float, Option(CSSUnit)), Nil) {
+  let #(before_unit, unit) = extract_css_unit(s)
+  use number <- on.ok(parse_to_float(before_unit))
+  Ok(#(number, unit))
+}
+```
+
+Example 2:
+
 ```gleam
 import gleam/io
 import gleam/string
@@ -13,21 +61,34 @@ import on
 import simplifile
 
 fn read_file(path: String) -> Result(String, String) {
-  use e <- on.error(simplifile.read(path))
-  Error("simplifile FileError: " <> string.inspect(e))
+  on.error(
+    simplifile.read(path),
+    on_error: fn(e) {Error("simplifile FileError: " <> string.inspect(e))},
+  )
 }
 
 pub fn main() -> Nil {
   use contents <- on.error_ok(
     read_file("./sample.txt"),
-    on_error: fn(msg) {
-      io.println("")
-      io.println(msg)
-    }
+    on_error: fn(msg) {io.println("\n" <> msg)}
   )
-  io.println("contents obtained:")
-  io.println("")
-  io.println(contents)
+
+  use first, rest <- on.lazy_empty_nonempty(
+    string.split(contents, "\n"),
+    on_empty: io.println("empty contents"),
+  )
+
+  use <- on.lazy_false_true(
+    string.trim(first) == "<!DOCTYPE html>",
+    on_false: io.println("expecting DOCTYPE in first line"),
+  )
+
+  use parse_tree <- on.error_ok(
+    parse_html(rest),
+    on_error: fn(e) {println("parse error: " <> string.inspect(e))}
+  )
+
+  // ...
 }
 ```
 
