@@ -523,7 +523,7 @@ pub fn none(
 //* List *
 //********
 
-/// Given a List(a), a value c of type c, and callback
+/// Given a List(a), a value of type c, and callback
 /// f(a, List(a)) -> c, returns either the value of type c
 /// if the list is empty or else applies the callback to 
 /// the head: a and tail: List(a) of the list.
@@ -684,6 +684,7 @@ pub fn nonempty(
 /// use <- on.empty([])
 /// // -> execution proceeds, the scope must return a List(c)
 /// ```
+/// 
 pub fn empty(
   list: List(a),
   on_empty f2: fn() -> List(a),
@@ -691,6 +692,224 @@ pub fn empty(
   case list {
     [_, .._] -> list
     [] -> f2()
+  }
+}
+
+/// Given a List(a), a value of type c, and callbacks
+/// f(a, a, List(a)) -> c, f(a) -> c, returns:
+///
+/// - the value of type c if the list is empty
+/// - the second callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// - the third callback evaluated with argument a1 if the list as the form [a1]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first <- on.zero_many_one(
+///   [1, 4, 7],
+///   on_zero: Error("empty list"),
+///   on_many: Error("> 1 element in list"),
+/// )
+/// // -> execution discontinues, scope returns Error("> 1 element in list")
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first <- on.zero_many_one(
+///   [4],
+///   on_zero: Error("empty list"),
+///   on_many: Error("> 1 element in list"),
+/// )
+/// // -> execution proceeds, first == 4;
+/// // scope must return a Result(c, String) to match the on_zero 
+/// // and on_many callbacks
+/// ```
+/// 
+pub fn zero_many_one(
+  list: List(a),
+  on_zero c: c,
+  on_many f2: fn(a, a, List(a)) -> c,
+  on_one f3: fn(a) -> c,
+) -> c {
+  case list {
+    [] -> c
+    [first, second, ..rest] -> f2(first, second, rest)
+    [first] -> f3(first)
+  }
+}
+
+/// Given a List(a) and callbacks f() -> c,
+/// f(a, a, List(a)) -> c, f(a) -> c, returns:
+///
+/// - the evaluation of the first callback if the list is empty
+/// - the second callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// - the third callback evaluated with argument a1 if the list as the form [a1]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first <- on.lazy_zero_many_one(
+///   [1, 4, 7],
+///   on_zero: Error("empty list"),
+///   on_many: fn(_, _, _) {Error("> 1 element in list")},
+/// )
+/// // -> execution discontinues, scope returns Error("> 1 element in list")
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first <- on.lazy_zero_many_one(
+///   [4],
+///   on_zero: Error("empty list"),
+///   on_many: Error("> 1 element in list"),
+/// )
+/// // -> execution proceeds, first == 4;
+/// // scope must return a Result(c, String) to match the on_zero 
+/// // and on_many callbacks
+/// ```
+/// 
+pub fn lazy_zero_many_one(
+  list: List(a),
+  on_zero f1: fn() -> c,
+  on_many f2: fn(a, a, List(a)) -> c,
+  on_one f3: fn(a) -> c,
+) -> c {
+  case list {
+    [] -> f1()
+    [first, second, ..rest] -> f2(first, second, rest)
+    [first] -> f3(first)
+  }
+}
+
+/// Given a List(a), a value of type c, and callbacks
+/// f(a) -> c, f(a, a, List(a)) -> c, returns:
+///
+/// - the value of type c if the list is empty
+/// - the second callback evaluated with argument a1 if the list as the form [a1]
+/// - the third callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.zero_one_many(
+///   [1, 4, 7],
+///   on_zero: 0,
+///   on_one: fn(first) {first},
+/// )
+/// // -> execution proceeds, first == 1, second == 4, rest == [7];
+/// // scope must return an Int to match the on_zero, on_one callbacks
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.zero_one_many(
+///   [4],
+///   on_zero: 0,
+///   on_one: fn(first) {first},
+/// )
+/// // -> execution discontinues, scope resturns 4
+/// ```
+/// 
+pub fn zero_one_many(
+  list: List(a),
+  on_zero c: c,
+  on_one f2: fn(a) -> c,
+  on_many f3: fn(a, a, List(a)) -> c,
+) -> c {
+  case list {
+    [] -> c
+    [first] -> f2(first)
+    [first, second, ..rest] -> f3(first, second, rest)
+  }
+}
+
+/// Given a List(a), a value of type c, and callbacks
+/// f(a) -> c, f(a, a, List(a)) -> c, returns:
+///
+/// - the value of type c if the list is empty
+/// - the second callback evaluated with argument a1 if the list as the form [a1]
+/// - the third callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.lazy_zero_one_many(
+///   [1, 4, 7],
+///   on_zero: 0,
+///   on_one: fn(first) {first},
+/// )
+/// // -> execution proceeds, first == 1, second == 4, rest == [7];
+/// // scope must return an Int to match the on_zero, on_one callbacks
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.lazy_zero_one_many(
+///   [4],
+///   on_zero: 0,
+///   on_one: fn(first) {first},
+/// )
+/// // -> execution discontinues, scope resturns 4
+/// ```
+/// 
+pub fn lazy_zero_one_many(
+  list: List(a),
+  on_zero f1: fn() -> c,
+  on_one f2: fn(a) -> c,
+  on_many f3: fn(a, a, List(a)) -> c,
+) -> c {
+  case list {
+    [] -> f1()
+    [first] -> f2(first)
+    [first, second, ..rest] -> f3(first, second, rest)
+  }
+}
+
+/// Given a List(a) and callbacks f(a) -> c,
+/// f(a, a, List(a)) -> c, f() -> c, returns:
+///
+/// - the first callback evaluated with argument a1 if the list as the form [a1]
+/// - the second callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// - the evaluation of the third callback if the list is empty
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use <- on.one_many_zero(
+///   [1, 4, 7],
+///   on_one: fn(x) {x + 1},
+///   on_many: fn(first, second, ..rest) {first + second},
+/// )
+/// // -> execution discontinues, scope returns 5 (= 1 + 4)
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.one_many_zero(
+///   [],
+///   on_one: fn(x) {x + 1},
+///   on_many: fn(first, second, ..rest) {first + second},
+/// )
+/// // -> execution proceeds, scope must return an Int to 
+/// // match the on_one, on_many callbacks
+/// 
+/// ```
+/// 
+pub fn one_many_zero(
+  list: List(a),
+  on_one f1: fn(a) -> c,
+  on_many f2: fn(a, a, List(a)) -> c,
+  on_zero f3: fn() -> c,
+) -> c {
+  case list {
+    [first] -> f1(first)
+    [first, second, ..rest] -> f2(first, second, rest)
+    [] -> f3()
   }
 }
 
