@@ -337,7 +337,7 @@ pub fn true(
 ///
 pub fn false(
   bool: Bool,
-  on_true f2: fn() -> Bool
+  on_false f2: fn() -> Bool
 ) -> Bool {
   case bool {
     True -> True
@@ -879,7 +879,7 @@ pub fn lazy_empty_singleton_gt1(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use <- on.one_gt1_empty(
+/// use <- on.singleton_gt1_empty(
 ///   [1, 4, 7],
 ///   on_singleton: fn(x) {x + 1},
 ///   on_gt1: fn(first, second, ..rest) {first + second},
@@ -890,7 +890,7 @@ pub fn lazy_empty_singleton_gt1(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.one_gt1_empty(
+/// use first, second, ..rest <- on.singleton_gt1_empty(
 ///   [],
 ///   on_singleton: fn(x) {x + 1},
 ///   on_gt1: fn(first, second, ..rest) {first + second},
@@ -900,7 +900,7 @@ pub fn lazy_empty_singleton_gt1(
 /// 
 /// ```
 /// 
-pub fn one_gt1_empty(
+pub fn singleton_gt1_empty(
   list: List(a),
   on_singleton f1: fn(a) -> c,
   on_gt1 f2: fn(a, a, List(a)) -> c,
