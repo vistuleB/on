@@ -310,7 +310,7 @@ pub fn lazy_true_false(
 ///
 pub fn true(
   bool: Bool,
-  on_true f2: fn() -> Bool
+  on_true f2: fn() -> Bool,
 ) -> Bool {
   case bool {
     False -> False
@@ -337,7 +337,7 @@ pub fn true(
 ///
 pub fn false(
   bool: Bool,
-  on_false f2: fn() -> Bool
+  on_false f2: fn() -> Bool,
 ) -> Bool {
   case bool {
     True -> True
@@ -483,7 +483,7 @@ pub fn some_none(
 ///
 pub fn some(
   option: Option(a),
-  on_some f2: fn(a) -> Option(c)
+  on_some f2: fn(a) -> Option(c),
 ) -> Option(c) {
   case option {
     None -> None
@@ -511,7 +511,7 @@ pub fn some(
 ///
 pub fn none(
   option: Option(a),
-  on_none f2: fn() -> Option(a)
+  on_none f2: fn() -> Option(a),
 ) -> Option(a) {
   case option {
     Some(a) -> Some(a)
