@@ -705,10 +705,10 @@ pub fn empty(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first <- on.zero_many_one(
+/// use first <- on.empty_gt1_singleton(
 ///   [1, 4, 7],
-///   on_zero: Error("empty list"),
-///   on_many: Error("> 1 element in list"),
+///   on_empty: Error("empty list"),
+///   on_gt1: Error("> 1 element in list"),
 /// )
 /// // -> execution discontinues, scope returns Error("> 1 element in list")
 /// ```
@@ -716,21 +716,21 @@ pub fn empty(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first <- on.zero_many_one(
+/// use first <- on.empty_gt1_singleton(
 ///   [4],
-///   on_zero: Error("empty list"),
-///   on_many: Error("> 1 element in list"),
+///   on_empty: Error("empty list"),
+///   on_gt1: Error("> 1 element in list"),
 /// )
 /// // -> execution proceeds, first == 4;
-/// // scope must return a Result(c, String) to match the on_zero 
-/// // and on_many callbacks
+/// // scope must return a Result(c, String) to match the on_empty 
+/// // and on_gt1 callbacks
 /// ```
 /// 
-pub fn zero_many_one(
+pub fn empty_gt1_singleton(
   list: List(a),
-  on_zero c: c,
-  on_many f2: fn(a, a, List(a)) -> c,
-  on_one f3: fn(a) -> c,
+  on_empty c: c,
+  on_gt1 f2: fn(a, a, List(a)) -> c,
+  on_singleton f3: fn(a) -> c,
 ) -> c {
   case list {
     [] -> c
@@ -749,10 +749,10 @@ pub fn zero_many_one(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first <- on.lazy_zero_many_one(
+/// use first <- on.lazy_empty_gt1_singleton(
 ///   [1, 4, 7],
-///   on_zero: Error("empty list"),
-///   on_many: fn(_, _, _) {Error("> 1 element in list")},
+///   on_empty: Error("empty list"),
+///   on_gt1: fn(_, _, _) {Error("> 1 element in list")},
 /// )
 /// // -> execution discontinues, scope returns Error("> 1 element in list")
 /// ```
@@ -760,21 +760,21 @@ pub fn zero_many_one(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first <- on.lazy_zero_many_one(
+/// use first <- on.lazy_empty_gt1_singleton(
 ///   [4],
-///   on_zero: Error("empty list"),
-///   on_many: Error("> 1 element in list"),
+///   on_empty: Error("empty list"),
+///   on_gt1: Error("> 1 element in list"),
 /// )
 /// // -> execution proceeds, first == 4;
-/// // scope must return a Result(c, String) to match the on_zero 
-/// // and on_many callbacks
+/// // scope must return a Result(c, String) to match the on_empty 
+/// // and on_gt1 callbacks
 /// ```
 /// 
-pub fn lazy_zero_many_one(
+pub fn lazy_empty_gt1_singleton(
   list: List(a),
-  on_zero f1: fn() -> c,
-  on_many f2: fn(a, a, List(a)) -> c,
-  on_one f3: fn(a) -> c,
+  on_empty f1: fn() -> c,
+  on_gt1 f2: fn(a, a, List(a)) -> c,
+  on_singleton f3: fn(a) -> c,
 ) -> c {
   case list {
     [] -> f1()
@@ -793,31 +793,31 @@ pub fn lazy_zero_many_one(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.zero_one_many(
+/// use first, second, ..rest <- on.empty_singleton_gt1(
 ///   [1, 4, 7],
-///   on_zero: 0,
-///   on_one: fn(first) {first},
+///   on_empty: 0,
+///   on_singleton: fn(first) {first},
 /// )
 /// // -> execution proceeds, first == 1, second == 4, rest == [7];
-/// // scope must return an Int to match the on_zero, on_one callbacks
+/// // scope must return an Int to match the on_empty, on_singleton callbacks
 /// ```
 /// 
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.zero_one_many(
+/// use first, second, ..rest <- on.empty_singleton_gt1(
 ///   [4],
-///   on_zero: 0,
-///   on_one: fn(first) {first},
+///   on_empty: 0,
+///   on_singleton: fn(first) {first},
 /// )
 /// // -> execution discontinues, scope resturns 4
 /// ```
 /// 
-pub fn zero_one_many(
+pub fn empty_singleton_gt1(
   list: List(a),
-  on_zero c: c,
-  on_one f2: fn(a) -> c,
-  on_many f3: fn(a, a, List(a)) -> c,
+  on_empty c: c,
+  on_singleton f2: fn(a) -> c,
+  on_gt1 f3: fn(a, a, List(a)) -> c,
 ) -> c {
   case list {
     [] -> c
@@ -836,31 +836,31 @@ pub fn zero_one_many(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.lazy_zero_one_many(
+/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
 ///   [1, 4, 7],
-///   on_zero: 0,
-///   on_one: fn(first) {first},
+///   on_empty: 0,
+///   on_singleton: fn(first) {first},
 /// )
 /// // -> execution proceeds, first == 1, second == 4, rest == [7];
-/// // scope must return an Int to match the on_zero, on_one callbacks
+/// // scope must return an Int to match the on_empty, on_singleton callbacks
 /// ```
 /// 
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.lazy_zero_one_many(
+/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
 ///   [4],
-///   on_zero: 0,
-///   on_one: fn(first) {first},
+///   on_empty: 0,
+///   on_singleton: fn(first) {first},
 /// )
 /// // -> execution discontinues, scope resturns 4
 /// ```
 /// 
-pub fn lazy_zero_one_many(
+pub fn lazy_empty_singleton_gt1(
   list: List(a),
-  on_zero f1: fn() -> c,
-  on_one f2: fn(a) -> c,
-  on_many f3: fn(a, a, List(a)) -> c,
+  on_empty f1: fn() -> c,
+  on_singleton f2: fn(a) -> c,
+  on_gt1 f3: fn(a, a, List(a)) -> c,
 ) -> c {
   case list {
     [] -> f1()
@@ -879,10 +879,10 @@ pub fn lazy_zero_one_many(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use <- on.one_many_zero(
+/// use <- on.one_gt1_empty(
 ///   [1, 4, 7],
-///   on_one: fn(x) {x + 1},
-///   on_many: fn(first, second, ..rest) {first + second},
+///   on_singleton: fn(x) {x + 1},
+///   on_gt1: fn(first, second, ..rest) {first + second},
 /// )
 /// // -> execution discontinues, scope returns 5 (= 1 + 4)
 /// ```
@@ -890,21 +890,21 @@ pub fn lazy_zero_one_many(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.one_many_zero(
+/// use first, second, ..rest <- on.one_gt1_empty(
 ///   [],
-///   on_one: fn(x) {x + 1},
-///   on_many: fn(first, second, ..rest) {first + second},
+///   on_singleton: fn(x) {x + 1},
+///   on_gt1: fn(first, second, ..rest) {first + second},
 /// )
 /// // -> execution proceeds, scope must return an Int to 
-/// // match the on_one, on_many callbacks
+/// // match the on_singleton, on_gt1 callbacks
 /// 
 /// ```
 /// 
-pub fn one_many_zero(
+pub fn one_gt1_empty(
   list: List(a),
-  on_one f1: fn(a) -> c,
-  on_many f2: fn(a, a, List(a)) -> c,
-  on_zero f3: fn() -> c,
+  on_singleton f1: fn(a) -> c,
+  on_gt1 f2: fn(a, a, List(a)) -> c,
+  on_empty f3: fn() -> c,
 ) -> c {
   case list {
     [first] -> f1(first)
