@@ -705,7 +705,7 @@ pub fn empty(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.empty_singleton_gt1(
+/// use first, second, ..rest <- on.empty_singleton_more(
 ///   [1, 4, 7],
 ///   on_empty: 0,
 ///   on_singleton: fn(first) {first},
@@ -717,7 +717,7 @@ pub fn empty(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.empty_singleton_gt1(
+/// use first, second, ..rest <- on.empty_singleton_more(
 ///   [4],
 ///   on_empty: 0,
 ///   on_singleton: fn(first) {first},
@@ -725,11 +725,11 @@ pub fn empty(
 /// // -> execution discontinues, scope resturns 4
 /// ```
 /// 
-pub fn empty_singleton_gt1(
+pub fn empty_singleton_more(
   list: List(a),
   on_empty c: c,
   on_singleton f2: fn(a) -> c,
-  on_gt1 f3: fn(a, a, List(a)) -> c,
+  on_more f3: fn(a, a, List(a)) -> c,
 ) -> c {
   case list {
     [] -> c
@@ -748,7 +748,7 @@ pub fn empty_singleton_gt1(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
+/// use first, second, ..rest <- on.lazy_empty_singleton_more(
 ///   [1, 4, 7],
 ///   on_empty: 0,
 ///   on_singleton: fn(first) {first},
@@ -760,7 +760,7 @@ pub fn empty_singleton_gt1(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
+/// use first, second, ..rest <- on.lazy_empty_singleton_more(
 ///   [4],
 ///   on_empty: 0,
 ///   on_singleton: fn(first) {first},
@@ -768,11 +768,11 @@ pub fn empty_singleton_gt1(
 /// // -> execution discontinues, scope resturns 4
 /// ```
 /// 
-pub fn lazy_empty_singleton_gt1(
+pub fn lazy_empty_singleton_more(
   list: List(a),
   on_empty f1: fn() -> c,
   on_singleton f2: fn(a) -> c,
-  on_gt1 f3: fn(a, a, List(a)) -> c,
+  on_more f3: fn(a, a, List(a)) -> c,
 ) -> c {
   case list {
     [] -> f1()
@@ -791,10 +791,10 @@ pub fn lazy_empty_singleton_gt1(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first <- on.empty_gt1_singleton(
+/// use first <- on.empty_more_singleton(
 ///   [1, 4, 7],
 ///   on_empty: Error("empty list"),
-///   on_gt1: Error("> 1 element in list"),
+///   on_more: Error("> 1 element in list"),
 /// )
 /// // -> execution discontinues, scope returns Error("> 1 element in list")
 /// ```
@@ -802,20 +802,20 @@ pub fn lazy_empty_singleton_gt1(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first <- on.empty_gt1_singleton(
+/// use first <- on.empty_more_singleton(
 ///   [4],
 ///   on_empty: Error("empty list"),
-///   on_gt1: Error("> 1 element in list"),
+///   on_more: Error("> 1 element in list"),
 /// )
 /// // -> execution proceeds, first == 4;
 /// // scope must return a Result(c, String) to match the on_empty 
-/// // and on_gt1 callbacks
+/// // and on_more callbacks
 /// ```
 /// 
-pub fn empty_gt1_singleton(
+pub fn empty_more_singleton(
   list: List(a),
   on_empty c: c,
-  on_gt1 f2: fn(a, a, List(a)) -> c,
+  on_more f2: fn(a, a, List(a)) -> c,
   on_singleton f3: fn(a) -> c,
 ) -> c {
   case list {
@@ -835,10 +835,10 @@ pub fn empty_gt1_singleton(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first <- on.lazy_empty_gt1_singleton(
+/// use first <- on.lazy_empty_more_singleton(
 ///   [1, 4, 7],
 ///   on_empty: Error("empty list"),
-///   on_gt1: fn(_, _, _) {Error("> 1 element in list")},
+///   on_more: fn(_, _, _) {Error("> 1 element in list")},
 /// )
 /// // -> execution discontinues, scope returns Error("> 1 element in list")
 /// ```
@@ -846,20 +846,20 @@ pub fn empty_gt1_singleton(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first <- on.lazy_empty_gt1_singleton(
+/// use first <- on.lazy_empty_more_singleton(
 ///   [4],
 ///   on_empty: Error("empty list"),
-///   on_gt1: Error("> 1 element in list"),
+///   on_more: Error("> 1 element in list"),
 /// )
 /// // -> execution proceeds, first == 4;
 /// // scope must return a Result(c, String) to match the on_empty 
-/// // and on_gt1 callbacks
+/// // and on_more callbacks
 /// ```
 /// 
-pub fn lazy_empty_gt1_singleton(
+pub fn lazy_empty_more_singleton(
   list: List(a),
   on_empty f1: fn() -> c,
-  on_gt1 f2: fn(a, a, List(a)) -> c,
+  on_more f2: fn(a, a, List(a)) -> c,
   on_singleton f3: fn(a) -> c,
 ) -> c {
   case list {
@@ -879,10 +879,10 @@ pub fn lazy_empty_gt1_singleton(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use <- on.singleton_gt1_empty(
+/// use <- on.singleton_more_empty(
 ///   [1, 4, 7],
 ///   on_singleton: fn(x) {x + 1},
-///   on_gt1: fn(first, second, ..rest) {first + second},
+///   on_more: fn(first, second, ..rest) {first + second},
 /// )
 /// // -> execution discontinues, scope returns 5 (= 1 + 4)
 /// ```
@@ -890,20 +890,20 @@ pub fn lazy_empty_gt1_singleton(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.singleton_gt1_empty(
+/// use first, second, ..rest <- on.singleton_more_empty(
 ///   [],
 ///   on_singleton: fn(x) {x + 1},
-///   on_gt1: fn(first, second, ..rest) {first + second},
+///   on_more: fn(first, second, ..rest) {first + second},
 /// )
 /// // -> execution proceeds, scope must return an Int to 
-/// // match the on_singleton, on_gt1 callbacks
+/// // match the on_singleton, on_more callbacks
 /// 
 /// ```
 /// 
-pub fn singleton_gt1_empty(
+pub fn singleton_more_empty(
   list: List(a),
   on_singleton f1: fn(a) -> c,
-  on_gt1 f2: fn(a, a, List(a)) -> c,
+  on_more f2: fn(a, a, List(a)) -> c,
   on_empty f3: fn() -> c,
 ) -> c {
   case list {
