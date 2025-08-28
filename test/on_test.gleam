@@ -283,64 +283,6 @@ pub fn nonempty_empty_test() {
   } == "MaxMax"
 }
 
-pub fn empty_gt1_singleton_test() {
-  assert {
-    use first <- on.empty_gt1_singleton(
-      ["Sue", "Max"],
-      "Empty",
-      fn(f, s, _rest) -> String {f <> s},
-    )
-    first <> first
-  } == "SueMax"
-
-  assert {
-    use first <- on.empty_gt1_singleton(
-      ["Sue"],
-      "Empty",
-      fn(f, s, _rest) -> String {f <> s},
-    )
-    first <> first
-  } == "SueSue"
-
-  assert {
-    use first <- on.empty_gt1_singleton(
-      [],
-      "Empty",
-      fn(f, s, _rest) -> String {f <> s},
-    )
-    first <> first
-  } == "Empty"
-}
-
-pub fn lazy_empty_gt1_singleton_test() {
-  assert {
-    use first <- on.lazy_empty_gt1_singleton(
-      ["Sue", "Max"],
-      fn(){"Empty"},
-      fn(f, s, _rest) -> String {f <> s},
-    )
-    first <> first
-  } == "SueMax"
-
-  assert {
-    use first <- on.lazy_empty_gt1_singleton(
-      ["Sue"],
-      fn(){"Empty"},
-      fn(f, s, _rest) -> String {f <> s},
-    )
-    first <> first
-  } == "SueSue"
-
-  assert {
-    use first <- on.lazy_empty_gt1_singleton(
-      [],
-      fn(){"Empty"},
-      fn(f, s, _rest) -> String {f <> s},
-    )
-    first <> first
-  } == "Empty"
-}
-
 pub fn empty_singleton_gt1_test() {
   assert {
     use first, second, _rest <- on.empty_singleton_gt1(
@@ -396,6 +338,64 @@ pub fn lazy_empty_singleton_gt1_test() {
       fn(f) -> String {f <> f},
     )
     first <> second
+  } == "Empty"
+}
+
+pub fn empty_gt1_singleton_test() {
+  assert {
+    use first <- on.empty_gt1_singleton(
+      ["Sue", "Max"],
+      "Empty",
+      fn(f, s, _rest) -> String {f <> s},
+    )
+    first <> first
+  } == "SueMax"
+
+  assert {
+    use first <- on.empty_gt1_singleton(
+      ["Sue"],
+      "Empty",
+      fn(f, s, _rest) -> String {f <> s},
+    )
+    first <> first
+  } == "SueSue"
+
+  assert {
+    use first <- on.empty_gt1_singleton(
+      [],
+      "Empty",
+      fn(f, s, _rest) -> String {f <> s},
+    )
+    first <> first
+  } == "Empty"
+}
+
+pub fn lazy_empty_gt1_singleton_test() {
+  assert {
+    use first <- on.lazy_empty_gt1_singleton(
+      ["Sue", "Max"],
+      fn(){"Empty"},
+      fn(f, s, _rest) -> String {f <> s},
+    )
+    first <> first
+  } == "SueMax"
+
+  assert {
+    use first <- on.lazy_empty_gt1_singleton(
+      ["Sue"],
+      fn(){"Empty"},
+      fn(f, s, _rest) -> String {f <> s},
+    )
+    first <> first
+  } == "SueSue"
+
+  assert {
+    use first <- on.lazy_empty_gt1_singleton(
+      [],
+      fn(){"Empty"},
+      fn(f, s, _rest) -> String {f <> s},
+    )
+    first <> first
   } == "Empty"
 }
 

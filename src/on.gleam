@@ -696,11 +696,97 @@ pub fn empty(
 }
 
 /// Given a List(a), a value of type c, and callbacks
+/// f(a) -> c, f(a, a, List(a)) -> c, returns:
+///
+/// - the value of type c if the list is empty
+/// - the first callback evaluated with argument a1 if the list as the form [a1]
+/// - the second callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.empty_singleton_gt1(
+///   [1, 4, 7],
+///   on_empty: 0,
+///   on_singleton: fn(first) {first},
+/// )
+/// // -> execution proceeds, first == 1, second == 4, rest == [7];
+/// // scope must return an Int to match the on_empty, on_singleton callbacks
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.empty_singleton_gt1(
+///   [4],
+///   on_empty: 0,
+///   on_singleton: fn(first) {first},
+/// )
+/// // -> execution discontinues, scope resturns 4
+/// ```
+/// 
+pub fn empty_singleton_gt1(
+  list: List(a),
+  on_empty c: c,
+  on_singleton f2: fn(a) -> c,
+  on_gt1 f3: fn(a, a, List(a)) -> c,
+) -> c {
+  case list {
+    [] -> c
+    [first] -> f2(first)
+    [first, second, ..rest] -> f3(first, second, rest)
+  }
+}
+
+/// Given a List(a), and callbacks f() -> c, f(a) -> c,
+/// f(a, a, List(a)) -> c, returns:
+///
+/// - the evaluation of the first callback if the list is empty
+/// - the second callback evaluated with argument a1 if the list as the form [a1]
+/// - the third callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
+///   [1, 4, 7],
+///   on_empty: 0,
+///   on_singleton: fn(first) {first},
+/// )
+/// // -> execution proceeds, first == 1, second == 4, rest == [7];
+/// // scope must return an Int to match the on_empty, on_singleton callbacks
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
+///   [4],
+///   on_empty: 0,
+///   on_singleton: fn(first) {first},
+/// )
+/// // -> execution discontinues, scope resturns 4
+/// ```
+/// 
+pub fn lazy_empty_singleton_gt1(
+  list: List(a),
+  on_empty f1: fn() -> c,
+  on_singleton f2: fn(a) -> c,
+  on_gt1 f3: fn(a, a, List(a)) -> c,
+) -> c {
+  case list {
+    [] -> f1()
+    [first] -> f2(first)
+    [first, second, ..rest] -> f3(first, second, rest)
+  }
+}
+
+/// Given a List(a), a value of type c, and callbacks
 /// f(a, a, List(a)) -> c, f(a) -> c, returns:
 ///
 /// - the value of type c if the list is empty
-/// - the second callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
-/// - the third callback evaluated with argument a1 if the list as the form [a1]
+/// - the first callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// - the second callback evaluated with argument a1 if the list as the form [a1]
 /// 
 /// ### Example 1
 /// 
@@ -780,92 +866,6 @@ pub fn lazy_empty_gt1_singleton(
     [] -> f1()
     [first, second, ..rest] -> f2(first, second, rest)
     [first] -> f3(first)
-  }
-}
-
-/// Given a List(a), a value of type c, and callbacks
-/// f(a) -> c, f(a, a, List(a)) -> c, returns:
-///
-/// - the value of type c if the list is empty
-/// - the second callback evaluated with argument a1 if the list as the form [a1]
-/// - the third callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
-/// 
-/// ### Example 1
-/// 
-/// ```gleam
-/// use first, second, ..rest <- on.empty_singleton_gt1(
-///   [1, 4, 7],
-///   on_empty: 0,
-///   on_singleton: fn(first) {first},
-/// )
-/// // -> execution proceeds, first == 1, second == 4, rest == [7];
-/// // scope must return an Int to match the on_empty, on_singleton callbacks
-/// ```
-/// 
-/// ### Example 2
-/// 
-/// ```gleam
-/// use first, second, ..rest <- on.empty_singleton_gt1(
-///   [4],
-///   on_empty: 0,
-///   on_singleton: fn(first) {first},
-/// )
-/// // -> execution discontinues, scope resturns 4
-/// ```
-/// 
-pub fn empty_singleton_gt1(
-  list: List(a),
-  on_empty c: c,
-  on_singleton f2: fn(a) -> c,
-  on_gt1 f3: fn(a, a, List(a)) -> c,
-) -> c {
-  case list {
-    [] -> c
-    [first] -> f2(first)
-    [first, second, ..rest] -> f3(first, second, rest)
-  }
-}
-
-/// Given a List(a), a value of type c, and callbacks
-/// f(a) -> c, f(a, a, List(a)) -> c, returns:
-///
-/// - the value of type c if the list is empty
-/// - the second callback evaluated with argument a1 if the list as the form [a1]
-/// - the third callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
-/// 
-/// ### Example 1
-/// 
-/// ```gleam
-/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
-///   [1, 4, 7],
-///   on_empty: 0,
-///   on_singleton: fn(first) {first},
-/// )
-/// // -> execution proceeds, first == 1, second == 4, rest == [7];
-/// // scope must return an Int to match the on_empty, on_singleton callbacks
-/// ```
-/// 
-/// ### Example 2
-/// 
-/// ```gleam
-/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
-///   [4],
-///   on_empty: 0,
-///   on_singleton: fn(first) {first},
-/// )
-/// // -> execution discontinues, scope resturns 4
-/// ```
-/// 
-pub fn lazy_empty_singleton_gt1(
-  list: List(a),
-  on_empty f1: fn() -> c,
-  on_singleton f2: fn(a) -> c,
-  on_gt1 f3: fn(a, a, List(a)) -> c,
-) -> c {
-  case list {
-    [] -> f1()
-    [first] -> f2(first)
-    [first, second, ..rest] -> f3(first, second, rest)
   }
 }
 
