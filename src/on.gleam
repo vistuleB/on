@@ -1,9 +1,9 @@
 import gleam/io
 import gleam/option.{type Option, Some, None}
 
-//**********
-//* Result *
-//**********
+// **********
+// * Result *
+// **********
 
 /// Given a Result(a, b) and callbacks f(b) -> c, f(a) -> c, 
 /// returns the evaluation of the relevant callback depending on
@@ -140,9 +140,9 @@ pub fn error(
   }
 }
 
-//********
-//* Bool *
-//********
+// ********
+// * Bool *
+// ********
 
 /// Given a Bool, a value of type c and a callback f() -> c,
 /// returns the value of type c if the bool is False, else the
@@ -345,9 +345,9 @@ pub fn false(
   }
 }
 
-//**********
-//* Option *
-//**********
+// **********
+// * Option *
+// **********
 
 /// Given an Option(a), a value of type c and a callback f(a) -> c, 
 /// returns the value of type c if the option is None, else
@@ -519,9 +519,9 @@ pub fn none(
   }
 }
 
-//********
-//* List *
-//********
+// ********
+// * List *
+// ********
 
 /// Given a List(a), a value of type c, and callback
 /// f(a, List(a)) -> c, returns either the value of type c
