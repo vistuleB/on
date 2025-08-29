@@ -934,7 +934,3 @@ pub fn singleton_gt1_empty(
     [] -> f3()
   }
 }
-
-pub fn main() -> Nil {
-  io.println("Hello from on!")
-}
