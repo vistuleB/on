@@ -3,7 +3,7 @@
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
-Pattern-matching in functional form on the core Gleam types, designed to pair with '<- use'.
+Pattern-matching in functional form on the core Gleam types to pair with `<- use`.
 
 ```sh
 gleam add on@1
