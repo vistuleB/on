@@ -4,7 +4,7 @@ version = "1.0.0"
 # Fill out these fields if you intend to generate HTML documentation or publish
 # your project to the Hex package manager.
 #
-description = "pattern-matching in functional form on the core Gleam types, to pair with '<- use'"
+description = "Pattern-matching in functional form on the core Gleam types, to pair with `<- use`."
 licences = ["MIT"]
 repository = { type = "github", user = "vistuleB", repo = "on" }
 # links = [{ title = "Website", href = "" }]
