@@ -14,7 +14,7 @@ import gleam/option.{type Option, Some, None}
 /// ```gleam
 /// use ok_payload <- on.error_ok(
 ///   Ok(3),
-///   on_error: fn(e) {"hi " <> e <> "!"},
+///   on_error: fn(e) { "hi " <> e <> "!" },
 /// )
 /// // -> execution proceeds, ok_payload == 3; the scope must return
 /// // a String to match the return value of the on_error callback
@@ -25,7 +25,7 @@ import gleam/option.{type Option, Some, None}
 /// ```gleam
 /// use ok_payload <- on.error_ok(
 ///   Error("Joe"),
-///   on_error: fn(e) {"hi " <> e <> "!"},
+///   on_error: fn(e) { "hi " <> e <> "!" },
 /// )
 /// // -> execution discontinues, scope returns "hi Joe!"
 /// ```
@@ -41,7 +41,7 @@ pub fn error_ok(
   }
 }
 
-/// Given a Result(a, b) and callbacks f(a) -> c, f(b) -> c, 
+/// Given a Result(a, b) and callbacks f(a) -> c, f(b) -> c,
 /// returns the evaluation of the relevant callback depending on
 /// the contents of the Result.
 ///
@@ -50,7 +50,7 @@ pub fn error_ok(
 /// ```gleam
 /// use error_payload <- on.ok_error(
 ///   Ok(3),
-///   on_ok: fn(x) {x + 1},
+///   on_ok: fn(x) { x + 1 },
 /// )
 /// // -> execution discontinues, scope returns 4
 /// ```
@@ -60,10 +60,10 @@ pub fn error_ok(
 /// ```gleam
 /// use error_payload <- on.ok_error(
 ///   Error("Joe"),
-///   on_ok: fn(x) {x + 1},
+///   on_ok: fn(x) { x + 1 },
 /// )
 /// // -> execution proceeds, error_payload == "Joe"; the scope
-/// // must return an Int to match the return value of the on_ok 
+/// // must return an Int to match the return value of the on_ok
 /// // callback
 /// ```
 ///
@@ -88,7 +88,7 @@ pub fn ok_error(
 ///
 /// ```gleam
 /// use ok_payload <- on.ok(Ok(3))
-/// // -> execution proceeds, ok_payload == 3; the current scope must 
+/// // -> execution proceeds, ok_payload == 3; the current scope must
 /// // return a Result(c, b) for some c, b
 /// ```
 ///
@@ -112,7 +112,7 @@ pub fn ok(
 /// Given a Result(a, b) and a callback f(b) -> Result(a, c) applies
 /// the callback if the Result has type Error else maps the Ok variant
 /// of type Result(a, b) to the Ok variant of type Result(c, b).
-/// 
+///
 /// Equivalent to on.ok_error(_, fn(o) -> {Ok(o)}, _).
 ///
 /// ### Example 1
@@ -189,7 +189,7 @@ pub fn false_true(
 /// ```gleam
 /// use <- on.lazy_false_true(
 ///   True,
-///   on_false: fn() {"Joe"},
+///   on_false: fn() { "Joe" },
 /// )
 /// // -> execution proceeds, the scope must return a String 
 /// // to match the return value of the on_false argument
@@ -200,7 +200,7 @@ pub fn false_true(
 /// ```gleam
 /// use <- on.lazy_false_true(
 ///   False,
-///   on_false: fn() {"Joe"},
+///   on_false: fn() { "Joe" },
 /// )
 /// // -> execution discontinues, scope returns "Joe"
 /// ```
@@ -262,7 +262,7 @@ pub fn true_false(
 /// ```gleam
 /// use <- on.lazy_true_false(
 ///   True,
-///   on_true: fn() {"Joe"},
+///   on_true: fn() { "Joe" },
 /// )
 /// // -> execution discontinues, scope returns "Joe"
 /// ```
@@ -272,7 +272,7 @@ pub fn true_false(
 /// ```gleam
 /// use <- on.lazy_true_false(
 ///   False,
-///   on_true: fn() {"Joe"},
+///   on_true: fn() { "Joe" },
 /// )
 /// // -> execution proceeds, the scope must return a String to 
 /// // match the return value of the on_false argument
@@ -393,7 +393,7 @@ pub fn none_some(
 /// ```gleam
 /// use payload <- on.lazy_none_some(
 ///   Some(3),
-///   on_none: fn() {"Bob"},
+///   on_none: fn() { "Bob" },
 /// )
 /// // -> execution proceeds, payload == 3; the scope must return
 /// // a String to match the return value of the on_none return
@@ -405,7 +405,7 @@ pub fn none_some(
 /// ```gleam
 /// use payload <- on.lazy_none_some(
 ///   None,
-///   on_none: fn() {"Bob"},
+///   on_none: fn() { "Bob" },
 /// )
 /// // -> execution discontinues, scope returns "Bob"
 /// ```
@@ -431,7 +431,7 @@ pub fn lazy_none_some(
 /// ```gleam
 /// use <- on.some_none(
 ///   Some(3),
-///   on_some: fn(x) {x + 1},
+///   on_some: fn(x) { x + 1 },
 /// )
 /// // -> execution discontinues, scope returns 4
 /// ```
@@ -441,7 +441,7 @@ pub fn lazy_none_some(
 /// ```gleam
 /// use <- on.some_none(
 ///   None,
-///   on_some: fn(x) {x + 1},
+///   on_some: fn(x) { x + 1 },
 /// )
 /// // -> execution proceeds, the scope must return an Int to match
 /// // the return value of the on_some return value
@@ -570,7 +570,7 @@ pub fn empty_nonempty(
 /// ```gleam
 /// use first, rest <- on.lazy_empty_nonempty(
 ///   [1, 4, 7],
-///   on_empty: fn() {"Joe"},
+///   on_empty: fn() { "Joe" },
 /// )
 /// // -> execution proceeds, first == 1, rest == [4, 7];
 /// // scope must return a String to match the empty list
@@ -582,7 +582,7 @@ pub fn empty_nonempty(
 /// ```gleam
 /// use first, rest <- on.lazy_empty_nonempty(
 ///   [],
-///   on_empty: fn() {"Joe"},
+///   on_empty: fn() { "Joe" },
 /// )
 /// // -> execution discontinues, scope returns "Joe"
 /// ```
@@ -609,7 +609,7 @@ pub fn lazy_empty_nonempty(
 /// ```gleam
 /// use <- on.nonempty_empty(
 ///   [1, 4, 7],
-///   fn(first, _rest) {first + 1},
+///   fn(first, _rest) { first + 1 },
 /// )
 /// // -> execution discontinues, scope returns 2
 /// ```
@@ -619,7 +619,7 @@ pub fn lazy_empty_nonempty(
 /// ```gleam
 /// use <- on.nonempty_empty(
 ///   [],
-///   fn(first, _rest) {first + 1},
+///   fn(first, _rest) { first + 1 },
 /// )
 /// // -> execution proceeds, the scope must return an
 /// // integer to match the return value of the first
@@ -708,7 +708,7 @@ pub fn empty(
 /// use first, second, ..rest <- on.empty_singleton_more(
 ///   [1, 4, 7],
 ///   on_empty: 0,
-///   on_singleton: fn(first) {first},
+///   on_singleton: fn(first) { first },
 /// )
 /// // -> execution proceeds, first == 1, second == 4, rest == [7];
 /// // scope must return an Int to match the on_empty, on_singleton callbacks
@@ -720,7 +720,7 @@ pub fn empty(
 /// use first, second, ..rest <- on.empty_singleton_more(
 ///   [4],
 ///   on_empty: 0,
-///   on_singleton: fn(first) {first},
+///   on_singleton: fn(first) { first },
 /// )
 /// // -> execution discontinues, scope resturns 4
 /// ```
@@ -751,7 +751,7 @@ pub fn empty_singleton_more(
 /// use first, second, ..rest <- on.lazy_empty_singleton_more(
 ///   [1, 4, 7],
 ///   on_empty: 0,
-///   on_singleton: fn(first) {first},
+///   on_singleton: fn(first) { first },
 /// )
 /// // -> execution proceeds, first == 1, second == 4, rest == [7];
 /// // scope must return an Int to match the on_empty, on_singleton callbacks
@@ -763,7 +763,7 @@ pub fn empty_singleton_more(
 /// use first, second, ..rest <- on.lazy_empty_singleton_more(
 ///   [4],
 ///   on_empty: 0,
-///   on_singleton: fn(first) {first},
+///   on_singleton: fn(first) { first },
 /// )
 /// // -> execution discontinues, scope resturns 4
 /// ```
@@ -881,8 +881,8 @@ pub fn lazy_empty_more_singleton(
 /// ```gleam
 /// use <- on.singleton_more_empty(
 ///   [1, 4, 7],
-///   on_singleton: fn(x) {x + 1},
-///   on_more: fn(first, second, ..rest) {first + second},
+///   on_singleton: fn(x) { x + 1 },
+///   on_more: fn(first, second, ..rest) { first + second},
 /// )
 /// // -> execution discontinues, scope returns 5 (= 1 + 4)
 /// ```
@@ -892,8 +892,8 @@ pub fn lazy_empty_more_singleton(
 /// ```gleam
 /// use first, second, ..rest <- on.singleton_more_empty(
 ///   [],
-///   on_singleton: fn(x) {x + 1},
-///   on_more: fn(first, second, ..rest) {first + second},
+///   on_singleton: fn(x) { x + 1 },
+///   on_more: fn(first, second, ..rest) { first + second},
 /// )
 /// // -> execution proceeds, scope must return an Int to 
 /// // match the on_singleton, on_more callbacks

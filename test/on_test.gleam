@@ -33,7 +33,7 @@ pub fn ok_error_test() {
   assert {
     use error_payload <- on.ok_error(
       Error("Max"),
-      fn(e){e + 1 |> string.inspect},
+      fn(e){e + 1 |> string.inspect },
     )
     error_payload <> error_payload
   } == "MaxMax"
@@ -41,7 +41,7 @@ pub fn ok_error_test() {
   assert {
     use error_payload <- on.ok_error(
       Ok(3),
-      fn(e){e + 1 |> string.inspect},
+      fn(e){e + 1 |> string.inspect },
     )
     error_payload <> error_payload
   } == "4"
@@ -73,7 +73,7 @@ pub fn lazy_false_true_test() {
   assert {
     use <- on.lazy_false_true(
       False,
-      fn() {"Max"},
+      fn() { "Max" },
     )
     "Sue"
   } == "Max"
@@ -81,7 +81,7 @@ pub fn lazy_false_true_test() {
   assert {
     use <- on.lazy_false_true(
       True,
-      fn() {"Max"},
+      fn() { "Max" },
     )
     "Sue"
   } == "Sue"
@@ -109,7 +109,7 @@ pub fn lazy_true_false_test() {
   assert {
     use <- on.lazy_true_false(
       False,
-      fn() {"Max"},
+      fn() { "Max" },
     )
     "Sue"
   } == "Sue"
@@ -117,7 +117,7 @@ pub fn lazy_true_false_test() {
   assert {
     use <- on.lazy_true_false(
       True,
-      fn() {"Max"},
+      fn() { "Max" },
     )
     "Sue"
   } == "Max"
@@ -193,7 +193,7 @@ pub fn lazy_none_some_test() {
   assert {
     use some_payload <- on.lazy_none_some(
       None,
-      fn(){"Sue"},
+      fn(){ "Sue" },
     )
     some_payload <> some_payload 
   } == "Sue"
@@ -201,7 +201,7 @@ pub fn lazy_none_some_test() {
   assert {
     use some_payload <- on.lazy_none_some(
       Some("Max"),
-      fn(){"Sue"},
+      fn(){ "Sue" },
     )
     some_payload <> some_payload 
   } == "MaxMax"
@@ -251,7 +251,7 @@ pub fn lazy_empty_nonempty_test() {
   assert {
     use first, _rest <- on.lazy_empty_nonempty(
       [],
-      fn(){"Sue"},
+      fn(){ "Sue" },
     )
     first <> first
   } == "Sue"
@@ -259,7 +259,7 @@ pub fn lazy_empty_nonempty_test() {
   assert {
     use first, _rest <- on.lazy_empty_nonempty(
       ["Max"],
-      fn(){"Sue"},
+      fn(){ "Sue" },
     )
     first <> first
   } == "MaxMax"
@@ -269,7 +269,7 @@ pub fn nonempty_empty_test() {
   assert {
     use <- on.nonempty_empty(
       [],
-      fn(first, _rest){first <> first},
+      fn(first, _rest){ first <> first },
     )
     "Sue"
   } == "Sue"
@@ -277,7 +277,7 @@ pub fn nonempty_empty_test() {
   assert {
     use <- on.nonempty_empty(
       ["Max"],
-      fn(first, _rest){first <> first},
+      fn(first, _rest){ first <> first },
     )
     "Sue"
   } == "MaxMax"
@@ -288,7 +288,7 @@ pub fn empty_singleton_more_test() {
     use first, second, _rest <- on.empty_singleton_more(
       ["Sue", "Max"],
       "Empty",
-      fn(f) -> String {f <> f},
+      fn(f) -> String { f <> f},
     )
     first <> second
   } == "SueMax"
@@ -297,7 +297,7 @@ pub fn empty_singleton_more_test() {
     use first, second, _rest <- on.empty_singleton_more(
       ["Sue"],
       "Empty",
-      fn(f) -> String {f <> f},
+      fn(f) -> String { f <> f},
     )
     first <> second
   } == "SueSue"
@@ -306,7 +306,7 @@ pub fn empty_singleton_more_test() {
     use first, second, _rest <- on.empty_singleton_more(
       [],
       "Empty",
-      fn(f) -> String {f <> f},
+      fn(f) -> String { f <> f},
     )
     first <> second
   } == "Empty"
@@ -316,8 +316,8 @@ pub fn lazy_empty_singleton_more_test() {
   assert {
     use first, second, _rest <- on.lazy_empty_singleton_more(
       ["Sue", "Max"],
-      fn() {"Empty"},
-      fn(f) -> String {f <> f},
+      fn() { "Empty" },
+      fn(f) -> String { f <> f},
     )
     first <> second
   } == "SueMax"
@@ -325,8 +325,8 @@ pub fn lazy_empty_singleton_more_test() {
   assert {
     use first, second, _rest <- on.lazy_empty_singleton_more(
       ["Sue"],
-      fn() {"Empty"},
-      fn(f) -> String {f <> f},
+      fn() { "Empty" },
+      fn(f) -> String { f <> f},
     )
     first <> second
   } == "SueSue"
@@ -334,8 +334,8 @@ pub fn lazy_empty_singleton_more_test() {
   assert {
     use first, second, _rest <- on.lazy_empty_singleton_more(
       [],
-      fn() {"Empty"},
-      fn(f) -> String {f <> f},
+      fn() { "Empty" },
+      fn(f) -> String { f <> f},
     )
     first <> second
   } == "Empty"
@@ -346,7 +346,7 @@ pub fn empty_more_singleton_test() {
     use first <- on.empty_more_singleton(
       ["Sue", "Max"],
       "Empty",
-      fn(f, s, _rest) -> String {f <> s},
+      fn(f, s, _rest) -> String { f <> s},
     )
     first <> first
   } == "SueMax"
@@ -355,7 +355,7 @@ pub fn empty_more_singleton_test() {
     use first <- on.empty_more_singleton(
       ["Sue"],
       "Empty",
-      fn(f, s, _rest) -> String {f <> s},
+      fn(f, s, _rest) -> String { f <> s},
     )
     first <> first
   } == "SueSue"
@@ -364,7 +364,7 @@ pub fn empty_more_singleton_test() {
     use first <- on.empty_more_singleton(
       [],
       "Empty",
-      fn(f, s, _rest) -> String {f <> s},
+      fn(f, s, _rest) -> String { f <> s},
     )
     first <> first
   } == "Empty"
@@ -374,8 +374,8 @@ pub fn lazy_empty_more_singleton_test() {
   assert {
     use first <- on.lazy_empty_more_singleton(
       ["Sue", "Max"],
-      fn(){"Empty"},
-      fn(f, s, _rest) -> String {f <> s},
+      fn(){ "Empty" },
+      fn(f, s, _rest) -> String { f <> s},
     )
     first <> first
   } == "SueMax"
@@ -383,8 +383,8 @@ pub fn lazy_empty_more_singleton_test() {
   assert {
     use first <- on.lazy_empty_more_singleton(
       ["Sue"],
-      fn(){"Empty"},
-      fn(f, s, _rest) -> String {f <> s},
+      fn(){ "Empty" },
+      fn(f, s, _rest) -> String { f <> s},
     )
     first <> first
   } == "SueSue"
@@ -392,8 +392,8 @@ pub fn lazy_empty_more_singleton_test() {
   assert {
     use first <- on.lazy_empty_more_singleton(
       [],
-      fn(){"Empty"},
-      fn(f, s, _rest) -> String {f <> s},
+      fn(){ "Empty" },
+      fn(f, s, _rest) -> String { f <> s},
     )
     first <> first
   } == "Empty"
@@ -403,8 +403,8 @@ pub fn singleton_more_empty_test() {
   assert {
     use <- on.singleton_more_empty(
       ["Sue", "Max"],
-      fn(f) {f <> f},
-      fn(f, s, _rest) -> String {f <> s},
+      fn(f) { f <> f},
+      fn(f, s, _rest) -> String { f <> s},
     )
     "Empty"
   } == "SueMax"
@@ -412,8 +412,8 @@ pub fn singleton_more_empty_test() {
   assert {
     use <- on.singleton_more_empty(
       ["Sue"],
-      fn(f) {f <> f},
-      fn(f, s, _rest) -> String {f <> s},
+      fn(f) { f <> f},
+      fn(f, s, _rest) -> String { f <> s},
     )
     "Empty"
   } == "SueSue"
@@ -421,8 +421,8 @@ pub fn singleton_more_empty_test() {
   assert {
     use <- on.singleton_more_empty(
       [],
-      fn(f) {f <> f},
-      fn(f, s, _rest) -> String {f <> s},
+      fn(f) { f <> f},
+      fn(f, s, _rest) -> String { f <> s},
     )
     "Empty"
   } == "Empty"
