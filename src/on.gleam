@@ -1,9 +1,75 @@
 import gleam/io
 import gleam/option.{type Option, Some, None}
 
-// **********
-// * Result *
-// **********
+// ************
+// * Result/1 *
+// ************
+
+/// Given a Result(a, b) and a callback f(a) -> Result(c, b) applies
+/// the callback if the Result has type Ok else maps the Error variant
+/// of type Result(a, b) to the Error variant of type Result(c, b).
+/// 
+/// Equivalent to result.try and to error_ok(_, fn(e) -> {Error(e)}, _).
+///
+/// ### Example 1
+///
+/// ```gleam
+/// use ok_payload <- on.ok(Ok(3))
+/// // -> execution proceeds, ok_payload == 3; the current scope must
+/// // return a Result(c, b) for some c, b
+/// ```
+///
+/// ### Example 2
+///
+/// ```gleam
+/// use ok_payload <- on.ok(Error("Joe"))
+/// // -> execution discontinues, scope returns Error("Joe")
+/// ```
+///
+pub fn ok(
+  result: Result(a, b),
+  on_ok f2: fn(a) -> Result(c, b),
+) -> Result(c, b) {
+  case result {
+    Error(e) -> Error(e)
+    Ok(a) -> f2(a)
+  }
+}
+
+/// Given a Result(a, b) and a callback f(b) -> Result(a, c) applies
+/// the callback if the Result has type Error else maps the Ok variant
+/// of type Result(a, b) to the Ok variant of type Result(c, b).
+///
+/// Equivalent to on.ok_error(_, fn(o) -> {Ok(o)}, _).
+///
+/// ### Example 1
+///
+/// ```gleam
+/// use error_payload <- on.error(Ok(3))
+/// // -> execution discontinues, scope returns Ok(3)
+/// ```
+///
+/// ### Example 2
+///
+/// ```gleam
+/// use error_payload <- on.error(Error("Joe"))
+/// // -> execution proceeds, error_payload == "Joe";
+/// // the scope must return a Result(a, c)
+/// ```
+///
+pub fn error(
+  result: Result(a, b),
+  on_error f2: fn(b) -> Result(a, c),
+) -> Result(a, c) {
+  case result {
+    Ok(a) -> Ok(a)
+    Error(e) -> f2(e)
+  }
+}
+
+// ************
+// * Result/2 *
+// ************
 
 /// Given a Result(a, b) and callbacks f(b) -> c, f(a) -> c, 
 /// returns the evaluation of the relevant callback depending on
@@ -78,71 +144,69 @@ pub fn ok_error(
   }
 }
 
-/// Given a Result(a, b) and a callback f(a) -> Result(c, b) applies
-/// the callback if the Result has type Ok else maps the Error variant
-/// of type Result(a, b) to the Error variant of type Result(c, b).
-/// 
-/// Equivalent to result.try and to error_ok(_, fn(e) -> {Error(e)}, _).
+// **********
+// * Bool/1 *
+// **********
+
+/// Given a Bool returns False if the bool is False, else
+/// returns a lazily evaluated callback.
+///
+/// Equivalent to on.false_true(_, False, _).
 ///
 /// ### Example 1
 ///
 /// ```gleam
-/// use ok_payload <- on.ok(Ok(3))
-/// // -> execution proceeds, ok_payload == 3; the current scope must
-/// // return a Result(c, b) for some c, b
+/// use <- on.true(True)
+/// // -> execution proceeds, scope must return a Bool
 /// ```
 ///
 /// ### Example 2
 ///
 /// ```gleam
-/// use ok_payload <- on.ok(Error("Joe"))
-/// // -> execution discontinues, scope returns Error("Joe")
+/// use <- on.true(False)
+/// // -> execution discontinues, scope returns False
 /// ```
 ///
-pub fn ok(
-  result: Result(a, b),
-  on_ok f2: fn(a) -> Result(c, b),
-) -> Result(c, b) {
-  case result {
-    Error(e) -> Error(e)
-    Ok(a) -> f2(a)
+pub fn true(
+  bool: Bool,
+  on_true f2: fn() -> Bool,
+) -> Bool {
+  case bool {
+    False -> False
+    True -> f2()
   }
 }
 
-/// Given a Result(a, b) and a callback f(b) -> Result(a, c) applies
-/// the callback if the Result has type Error else maps the Ok variant
-/// of type Result(a, b) to the Ok variant of type Result(c, b).
-///
-/// Equivalent to on.ok_error(_, fn(o) -> {Ok(o)}, _).
+/// Given a Bool returns True if the bool is True, else
+/// returns a lazily evaluated callback.
 ///
 /// ### Example 1
 ///
 /// ```gleam
-/// use error_payload <- on.error(Ok(3))
-/// // -> execution discontinues, scope returns Ok(3)
+/// use <- on.false(True)
+/// // -> execution discontinues, scope returns True
 /// ```
 ///
 /// ### Example 2
 ///
 /// ```gleam
-/// use error_payload <- on.error(Error("Joe"))
-/// // -> execution proceeds, error_payload == "Joe";
-/// // the scope must return a Result(a, c)
+/// use <- on.false(False)
+/// // -> execution proceeds, scope must return a Bool
 /// ```
 ///
-pub fn error(
-  result: Result(a, b),
-  on_error f2: fn(b) -> Result(a, c),
-) -> Result(a, c) {
-  case result {
-    Ok(a) -> Ok(a)
-    Error(e) -> f2(e)
+pub fn false(
+  bool: Bool,
+  on_false f2: fn() -> Bool,
+) -> Bool {
+  case bool {
+    True -> True
+    False -> f2()
   }
 }
 
-// ********
-// * Bool *
-// ********
+// **********
+// * Bool/2 *
+// **********
 
 /// Given a Bool, a value of type c and a callback f() -> c,
 /// returns the value of type c if the bool is False, else the
@@ -289,65 +353,74 @@ pub fn lazy_true_false(
   }
 }
 
-/// Given a Bool returns False if the bool is False, else
-/// returns a lazily evaluated callback.
+// ************
+// * Option/1 *
+// ************
+
+/// Given an Option(a) and a callback f(a) -> Option(c)
+/// applies the callback to the payload a if the option is Some(a),
+/// else returns None.
 ///
-/// Equivalent to on.false_true(_, False, _).
+/// Equivalent to:
+/// - on.none_some(_, None, _).
+/// - option.then
+/// 
+/// ### Example 1
+///
+/// ```gleam
+/// use payload <- on.some(Some(3))
+/// // -> execution proceeds, payload == 3; the scope must return
+/// // an Option(c)
+/// ```
+///
+/// ### Example 2
+/// 
+/// ```gleam
+/// use payload <- on.some(None)
+/// // -> execution discontinues, scope returns None
+/// ```
+///
+pub fn some(
+  option: Option(a),
+  on_some f2: fn(a) -> Option(c),
+) -> Option(c) {
+  case option {
+    None -> None
+    Some(a) -> f2(a)
+  }
+}
+
+/// Given an Option(a) and a callback f() -> Option(a), applies
+/// the callback if the option is None, else returns the option
+/// unchanged.
 ///
 /// ### Example 1
 ///
 /// ```gleam
-/// use <- on.true(True)
-/// // -> execution proceeds, scope must return a Bool
+/// use <- on.none(Some(3))
+/// // -> execution discontinues, scope returns Some(3)
 /// ```
 ///
 /// ### Example 2
 ///
 /// ```gleam
-/// use <- on.true(False)
-/// // -> execution discontinues, scope returns False
+/// use <- on.none(None)
+/// // -> execution proceeds, the scope must return an Option(a)
 /// ```
 ///
-pub fn true(
-  bool: Bool,
-  on_true f2: fn() -> Bool,
-) -> Bool {
-  case bool {
-    False -> False
-    True -> f2()
+pub fn none(
+  option: Option(a),
+  on_none f2: fn() -> Option(a),
+) -> Option(a) {
+  case option {
+    Some(a) -> Some(a)
+    None -> f2()
   }
 }
 
-/// Given a Bool returns True if the bool is True, else
-/// returns a lazily evaluated callback.
-///
-/// ### Example 1
-///
-/// ```gleam
-/// use <- on.false(True)
-/// // -> execution discontinues, scope returns True
-/// ```
-///
-/// ### Example 2
-///
-/// ```gleam
-/// use <- on.false(False)
-/// // -> execution proceeds, scope must return a Bool
-/// ```
-///
-pub fn false(
-  bool: Bool,
-  on_false f2: fn() -> Bool,
-) -> Bool {
-  case bool {
-    True -> True
-    False -> f2()
-  }
-}
-
-// **********
-// * Option *
-// **********
+// ************
+// * Option/2 *
+// ************
 
 /// Given an Option(a), a value of type c and a callback f(a) -> c, 
 /// returns the value of type c if the option is None, else
@@ -458,70 +531,72 @@ pub fn some_none(
   }
 }
 
-/// Given an Option(a) and a callback f(a) -> Option(c)
-/// applies the callback to the payload a if the option is Some(a),
-/// else returns None.
-///
-/// Equivalent to:
-/// - on.none_some(_, None, _).
-/// - option.then
+// **********
+// * List/1 *
+// **********
+
+/// Given a List(a) and a callback
+/// f(a, List(a)) -> List(c), returns the empty list if the
+/// list is empty, else evaluates the callback on (first, rest)
+/// where 'first' is the first element and 'tail' is the tail of 
+/// the list.
 /// 
 /// ### Example 1
-///
+/// 
 /// ```gleam
-/// use payload <- on.some(Some(3))
-/// // -> execution proceeds, payload == 3; the scope must return
-/// // an Option(c)
+/// use first, rest <- on.nonempty([1, 4, 7])
+/// // -> execution proceeds, first == 1, rest == [1, 7];
+/// // scope must return a List(c)
 /// ```
-///
+/// 
 /// ### Example 2
 /// 
 /// ```gleam
-/// use payload <- on.some(None)
-/// // -> execution discontinues, scope returns None
+/// use first, rest <- on.nonempty([])
+/// // -> execution discontinues, scope returns []
 /// ```
-///
-pub fn some(
-  option: Option(a),
-  on_some f2: fn(a) -> Option(c),
-) -> Option(c) {
-  case option {
-    None -> None
-    Some(a) -> f2(a)
+/// 
+pub fn nonempty(
+  list: List(a),
+  on_nonempty f2: fn(a, List(a)) -> List(c),
+) -> List(c) {
+  case list {
+    [] -> []
+    [first, ..rest] -> f2(first, rest)
   }
 }
 
-/// Given an Option(a) and a callback f() -> Option(a), applies
-/// the callback if the option is None, else returns the option
-/// unchanged.
+/// Given a List(a) and a callback f() -> List(a)
+/// returns the list if the is nonempty, else evaluates
+/// the callback.
 ///
 /// ### Example 1
-///
+/// 
 /// ```gleam
-/// use <- on.none(Some(3))
-/// // -> execution discontinues, scope returns Some(3)
+/// use <- on.empty([1, 4, 7])
+/// // -> execution discontinues, scope returns [1, 4, 7]
 /// ```
-///
+/// 
 /// ### Example 2
-///
+/// 
 /// ```gleam
-/// use <- on.none(None)
-/// // -> execution proceeds, the scope must return an Option(a)
+/// use <- on.empty([])
+/// // -> execution proceeds, the scope must return a List(c)
 /// ```
-///
-pub fn none(
-  option: Option(a),
-  on_none f2: fn() -> Option(a),
-) -> Option(a) {
-  case option {
-    Some(a) -> Some(a)
-    None -> f2()
+/// 
+pub fn empty(
+  list: List(a),
+  on_empty f2: fn() -> List(a),
+) -> List(a) {
+  case list {
+    [_, .._] -> list
+    [] -> f2()
   }
 }
 
-// ********
-// * List *
-// ********
+// **********
+// * List/2 *
+// **********
 
 /// Given a List(a), a value of type c, and callback
 /// f(a, List(a)) -> c, returns either the value of type c
@@ -638,64 +713,9 @@ pub fn nonempty_empty(
   }
 }
 
-/// Given a List(a) and a callback
-/// f(a, List(a)) -> List(c), returns the empty list if the
-/// list is empty, else evaluates the callback on (first, rest)
-/// where 'first' is the first element and 'tail' is the tail of 
-/// the list.
-/// 
-/// ### Example 1
-/// 
-/// ```gleam
-/// use first, rest <- on.nonempty([1, 4, 7])
-/// // -> execution proceeds, first == 1, rest == [1, 7];
-/// // scope must return a List(c)
-/// ```
-/// 
-/// ### Example 2
-/// 
-/// ```gleam
-/// use first, rest <- on.nonempty([])
-/// // -> execution discontinues, scope returns []
-/// ```
-/// 
-pub fn nonempty(
-  list: List(a),
-  on_nonempty f2: fn(a, List(a)) -> List(c),
-) -> List(c) {
-  case list {
-    [] -> []
-    [first, ..rest] -> f2(first, rest)
-  }
-}
-
-/// Given a List(a) and a callback f() -> List(a)
-/// returns the list if the is nonempty, else evaluates
-/// the callback.
-///
-/// ### Example 1
-/// 
-/// ```gleam
-/// use <- on.empty([1, 4, 7])
-/// // -> execution discontinues, scope returns [1, 4, 7]
-/// ```
-/// 
-/// ### Example 2
-/// 
-/// ```gleam
-/// use <- on.empty([])
-/// // -> execution proceeds, the scope must return a List(c)
-/// ```
-/// 
-pub fn empty(
-  list: List(a),
-  on_empty f2: fn() -> List(a),
-) -> List(a) {
-  case list {
-    [_, .._] -> list
-    [] -> f2()
-  }
-}
+// **********
+// * List/3 *
+// **********
 
 /// Given a List(a), a value of type c, and callbacks
 /// f(a) -> c, f(a, a, List(a)) -> c, returns:
