@@ -3,7 +3,7 @@
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
-Pattern-matching in functional form on the core Gleam types to pair with `<- use`.
+Pattern-matching in functional form on the core Gleam types.
 
 ```sh
 gleam add on@1
@@ -71,29 +71,29 @@ import simplifile
 fn read_file(path: String) -> Result(String, String) {
   on.error(
     simplifile.read(path),
-    on_error: fn(e) {Error("simplifile FileError: " <> string.inspect(e))},
+    on_error: fn(e) { Error("simplifile FileError: " <> string.inspect(e)) },
   )
 }
 
 pub fn main() -> Nil {
   use contents <- on.error_ok(
     read_file("./sample.txt"),
-    on_error: fn(msg) {io.println("\n" <> msg)}
+    on_error: fn(msg) { io.println("\n" <> msg) }
   )
 
   use first, rest <- on.lazy_empty_nonempty(
     string.split(contents, "\n"),
-    on_empty: fn() {io.println("empty contents")},
+    on_empty: fn() { io.println("empty contents") },
   )
 
   use <- on.lazy_false_true(
     string.trim(first) == "<!DOCTYPE html>",
-    on_false: fn() {io.println("expecting DOCTYPE in first line")},
+    on_false: fn() { io.println("expecting DOCTYPE in first line") },
   )
 
   use parse_tree <- on.error_ok(
     parse_html(rest),
-    on_error: fn(e) {println("parse error: " <> string.inspect(e))},
+    on_error: fn(e) { println("parse error: " <> string.inspect(e)) },
   )
 
   // ...
