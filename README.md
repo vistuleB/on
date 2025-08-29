@@ -3,7 +3,7 @@
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
-Pattern-matching in functional form on some of the core Gleam types.
+Pattern-matching in functional form on the core Gleam types, designed to pair with '<- use'.
 
 ```sh
 gleam add on@1
@@ -52,7 +52,7 @@ fn parse_to_float(s: String) -> Result(Float, Nil) {
 }
 
 pub fn parse_number_and_optional_css_unit(
-  s: String
+  s: String,
 ) -> Result(#(Float, Option(CSSUnit)), Nil) {
   let #(before_unit, unit) = extract_css_unit(s)
   use number <- on.ok(parse_to_float(before_unit))
@@ -93,7 +93,7 @@ pub fn main() -> Nil {
 
   use parse_tree <- on.error_ok(
     parse_html(rest),
-    on_error: fn(e) {println("parse error: " <> string.inspect(e))}
+    on_error: fn(e) {println("parse error: " <> string.inspect(e))},
   )
 
   // ...
