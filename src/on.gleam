@@ -1,4 +1,3 @@
-import gleam/io
 import gleam/option.{type Option, Some, None}
 
 // ************
