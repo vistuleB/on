@@ -71,8 +71,9 @@ pub fn error(
 // ************
 
 /// Given a Result(a, b) and callbacks f(b) -> c, f(a) -> c, 
-/// returns the evaluation of the relevant callback depending on
-/// the contents of the Result.
+/// returns the evaluation of the first callback at b1 if the
+/// Result is Error(b1) and the evaluation of the second callback
+/// at a1 if Result is Ok(a1).
 ///
 /// ### Example 1
 /// 
@@ -106,9 +107,10 @@ pub fn error_ok(
   }
 }
 
-/// Given a Result(a, b) and callbacks f(a) -> c, f(b) -> c,
-/// returns the evaluation of the relevant callback depending on
-/// the contents of the Result.
+/// Given a Result(a, b) and callbacks f(b) -> c, f(a) -> c, 
+/// returns the evaluation of the first callback at a1 if the
+/// Result is Ok(a1) and the evaluation of the second callback
+/// at b1 if Result is Error(b1).
 ///
 /// ### Example 1
 ///
