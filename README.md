@@ -14,7 +14,7 @@ To be compared with the [given](https://hexdocs.pm/given/) package. While [given
 To wit, the general [given](https://hexdocs.pm/given/) API call has the form and usage:
 
 ```
-// API
+// form
 
 fn statement_of_truthiness_about_thing(
   thing: Thing,
@@ -24,7 +24,7 @@ fn statement_of_truthiness_about_thing(
 ```
 
 ```
-// usage:
+// usage
 
 use truthiness_payload <- given.statement_of_truthiness_about_thing(
   some_thing(),
@@ -37,7 +37,7 @@ use truthiness_payload <- given.statement_of_truthiness_about_thing(
 While for [on](https://hexdocs.pm/on/) the general form and usage is:
 
 ```
-// API
+// form
 
 fn variant1_variant2_variant3(
   thing: Thing,
