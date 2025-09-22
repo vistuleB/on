@@ -99,7 +99,7 @@ pub fn main() -> Nil {
 
   use parse_tree <- on.error_ok(
     parse_html(rest),
-    on_error: fn(e) { println("parse error: " <> string.inspect(e)) },
+    on_error: fn(e) { println("html parse error: " <> string.inspect(e)) },
   )
 
   // ...
