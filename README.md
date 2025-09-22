@@ -61,9 +61,7 @@ use variant3_payload <- on.variant1_variant2_variant3(
 
 Note that [on](https://hexdocs.pm/on/) expects values, not callbacks, for 0-ary variants. Use the `lazy_` version of the API call (e.g., `on.lazy_true_false` instead of `on.true_false`) if eager evaluation is problematic. (E.g., expensive or side-effectful.)
 
-Variants are elided when mapped to themselves. E.g., `on.ok` is the specialized version of `on.error_ok` for which the `Error`-variant callback maps `Error(b)` to `Error(b)`.
-
-Note that `on.ok` is isomorphic to `result.try` and provides a potentially more ergonomic/readable alternative to the latter.
+Variants are elided when mapped to themselves. E.g., `on.ok` is the specialized version of `on.error_ok` for which the `Error`-variant callback maps `Error(b)` to `Error(b)`. (I.e., `on.ok` is isomorphic to `result.try`.)
 
 #### Example 1
 
