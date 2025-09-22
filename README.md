@@ -11,7 +11,7 @@ gleam add on@1
 
 To be compared with the more established [given](https://hexdocs.pm/given/) package. While [given](https://hexdocs.pm/given/) uses truthiness-based semantics, [on](https://hexdocs.pm/on/) uses a "variantyness" -based approach.
 
-The general [given](https://hexdocs.pm/given/) API call has the form/usage:
+To wit, the general [given](https://hexdocs.pm/given/) API call has the form/usage:
 
 ```
 // API
@@ -34,7 +34,7 @@ use truthiness_payload <- given.statement_of_truthiness_about_thing(
 ...
 ```
 
-For [on](https://hexdocs.pm/on/), the general form is:
+Whereas for [on](https://hexdocs.pm/on/) the general form is:
 
 ```
 // API
