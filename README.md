@@ -72,9 +72,12 @@ import on
 import simplifile
 
 fn read_file(path: String) -> Result(String, String) {
-  on.error(
-    simplifile.read(path),
-    on_error: fn(e) { Error("simplifile FileError: " <> string.inspect(e)) },
+  simplifile.read(path)
+  |> result.map_error(
+    // map the error to an 'Error(String)'
+    // one could also use 'on.error' instead of 'result.map_error'
+    // as the two functions are isomorphic
+    fn(e) { Error("simplifile FileError: " <> string.inspect(e)) } 
   )
 }
 
