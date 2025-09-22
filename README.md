@@ -76,7 +76,7 @@ fn read_file(path: String) -> Result(String, String) {
   |> result.map_error(
     // map the error to an 'Error(String)'
     // one could also use 'on.error' instead of 'result.map_error'
-    // as the two functions are isomorphic
+    // as the two functions are isomorphic:
     fn(e) { Error("simplifile FileError: " <> string.inspect(e)) } 
   )
 }
