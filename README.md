@@ -9,11 +9,13 @@ Ergonomic guards for the core gleam types to apply with the `<- use` syntax.
 gleam add on@1
 ```
 
-To be compared with the older [given](https://hexdocs.pm/given/) package. While [given](https://hexdocs.pm/given/) uses "truthiness"-based semantics, [on](https://hexdocs.pm/on/) uses a "variantyness"-based semantics.
+To be compared with the more established [given](https://hexdocs.pm/given/) package. While [given](https://hexdocs.pm/given/) uses truthiness-based semantics, [on](https://hexdocs.pm/on/) uses a "variantyness" -based approach.
 
-E.g., the general form and usage of a [given](https://hexdocs.pm/given/) guard is:
+The general [given](https://hexdocs.pm/given/) API call has the form/usage:
 
 ```
+// API
+
 fn statement_of_truthiness_about_thing(
   thing: Thing,
   else_return f1: fn(falsiness_payload) -> ...,   // what to compute if statement does not hold
@@ -22,6 +24,8 @@ fn statement_of_truthiness_about_thing(
 ```
 
 ```
+// usage:
+
 use truthiness_payload <- given.statement_of_truthiness_about_thing(
   some_thing(),
   what_to_do_with_falsiness_payload,              // the 'f1' from above
@@ -30,9 +34,11 @@ use truthiness_payload <- given.statement_of_truthiness_about_thing(
 ...
 ```
 
-Whereas the general form of guard in the [on](https://hexdocs.pm/on/) package is:
+For [on](https://hexdocs.pm/on/):
 
 ```
+// API
+
 fn variant1_variant2_variant3(
   thing: Thing,
   on_variant1 f1: fn(variant1_payload) -> ...,
@@ -41,9 +47,9 @@ fn variant1_variant2_variant3(
 )
 ```
 
-With usage:
-
 ```
+// usage
+
 use variant3_payload <- on.variant1_variant2_variant3(
   some_thing(),
   what_to_do_with_variant1_payload,
@@ -53,7 +59,7 @@ use variant3_payload <- on.variant1_variant2_variant3(
 ...
 ```
 
-[on](https://hexdocs.pm/on/) does not stray from this general pattern and is in this sense more minimalistic 
+[On](https://hexdocs.pm/on/) does not stray from this general pattern and is in this sense more minimalistic than [given](https://hexdocs.pm/given/).
 
 Note that [on](https://hexdocs.pm/on/) expects values, not callbacks, for 0-ary variants. Use the `lazy_` version of the API call (e.g., `on.lazy_true_false` instead of `on.true_false`) if eager evaluation is problematic. (E.g., expensive or side-effectful.)
 
