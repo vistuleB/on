@@ -9,7 +9,7 @@ Ergonomic guards for the core gleam types to apply with the `<- use` syntax.
 gleam add on@1
 ```
 
-To be compared with the more established [given](https://hexdocs.pm/given/) package. While [given](https://hexdocs.pm/given/) uses truthiness-based semantics, [on](https://hexdocs.pm/on/) uses a "variantyness" -based approach.
+To be compared with the [given](https://hexdocs.pm/given/) package. While [given](https://hexdocs.pm/given/) uses truthiness-based semantics, [on](https://hexdocs.pm/on/) uses a "variantyness" -based approach.
 
 To wit, the general [given](https://hexdocs.pm/given/) API call has the form and usage:
 
