@@ -11,7 +11,7 @@ gleam add on@1
 
 To be compared with the more established [given](https://hexdocs.pm/given/) package. While [given](https://hexdocs.pm/given/) uses truthiness-based semantics, [on](https://hexdocs.pm/on/) uses a "variantyness" -based approach.
 
-To wit, the general [given](https://hexdocs.pm/given/) API call has the form/usage:
+To wit, the general [given](https://hexdocs.pm/given/) API call has the form and usage:
 
 ```
 // API
@@ -34,7 +34,7 @@ use truthiness_payload <- given.statement_of_truthiness_about_thing(
 ...
 ```
 
-Whereas for [on](https://hexdocs.pm/on/) the general form is:
+While for [on](https://hexdocs.pm/on/) the general form and usage is:
 
 ```
 // API
@@ -66,63 +66,6 @@ Variants are elided when mapped to themselves. E.g., `on.ok` is the specialized 
 Note that `on.ok` is isomorphic to `result.try` and provides a potentially more ergonomic/readable alternative to the latter.
 
 #### Example 1
-
-```gleam
-import gleam/float
-import gleam/int
-import gleam/option.{type Option, None, Some}
-import gleam/string
-import on
-
-type CSSUnit {
-  PX
-  REM
-  EM
-  PT
-}
-
-fn extract_css_unit(s: String) -> #(String, Option(CSSUnit)) {
-  use <- on.true_false(
-    string.ends_with(s, "rem"),
-    on_true: #(string.drop_end(s, 3), Some(REM)),
-  )
-
-  use <- on.true_false(
-    string.ends_with(s, "em"),
-    on_true: #(string.drop_end(s, 2), Some(EM)),
-  )
-
-  use <- on.true_false(
-    string.ends_with(s, "px"),
-    on_true: #(string.drop_end(s, 2), Some(PX)),
-  )
-
-  use <- on.true_false(
-    string.ends_with(s, "pt"),
-    on_true: #(string.drop_end(s, 2), Some(PT)),
-  )
-
-  #(s, None)
-}
-
-fn parse_to_float(s: String) -> Result(Float, Nil) {
-  case float.parse(s), int.parse(s) {
-    Ok(number), _ -> Ok(number)
-    _, Ok(number) -> Ok(int.to_float(number))
-    _, _ -> Error(Nil)
-  }
-}
-
-pub fn parse_number_and_optional_css_unit(
-  s: String,
-) -> Result(#(Float, Option(CSSUnit)), Nil) {
-  let #(before_unit, unit) = extract_css_unit(s)
-  use number <- on.ok(parse_to_float(before_unit))
-  Ok(#(number, unit))
-}
-```
-
-#### Example 2
 
 ```gleam
 import gleam/io
@@ -162,7 +105,56 @@ pub fn main() -> Nil {
 }
 ```
 
-Further documentation can be found at <https://hexdocs.pm/on>.
+#### Example 1
+
+```gleam
+import gleam/float
+import gleam/int
+import gleam/option.{type Option, None, Some}
+import gleam/string
+import on
+
+type CSSUnit {
+  PX
+  REM
+  EM
+}
+
+fn extract_css_unit(s: String) -> #(String, Option(CSSUnit)) {
+  use <- on.true_false(
+    string.ends_with(s, "rem"),
+    on_true: #(string.drop_end(s, 3), Some(REM)),
+  )
+
+  use <- on.true_false(
+    string.ends_with(s, "em"),
+    on_true: #(string.drop_end(s, 2), Some(EM)),
+  )
+
+  use <- on.true_false(
+    string.ends_with(s, "px"),
+    on_true: #(string.drop_end(s, 2), Some(PX)),
+  )
+
+  #(s, None)
+}
+
+fn parse_to_float(s: String) -> Result(Float, Nil) {
+  case float.parse(s), int.parse(s) {
+    Ok(number), _ -> Ok(number)
+    _, Ok(number) -> Ok(int.to_float(number))
+    _, _ -> Error(Nil)
+  }
+}
+
+pub fn parse_number_and_optional_css_unit(
+  s: String,
+) -> Result(#(Float, Option(CSSUnit)), Nil) {
+  let #(before_unit, unit) = extract_css_unit(s)
+  use number <- on.ok(parse_to_float(before_unit))
+  Ok(#(number, unit))
+}
+```
 
 ## Development
 
