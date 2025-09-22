@@ -34,7 +34,7 @@ use truthiness_payload <- given.statement_of_truthiness_about_thing(
 ...
 ```
 
-For [on](https://hexdocs.pm/on/):
+For [on](https://hexdocs.pm/on/), the general form is:
 
 ```
 // API
@@ -58,8 +58,6 @@ use variant3_payload <- on.variant1_variant2_variant3(
 
 ...
 ```
-
-[On](https://hexdocs.pm/on/) does not stray from this general pattern and is in this sense more minimalistic than [given](https://hexdocs.pm/given/).
 
 Note that [on](https://hexdocs.pm/on/) expects values, not callbacks, for 0-ary variants. Use the `lazy_` version of the API call (e.g., `on.lazy_true_false` instead of `on.true_false`) if eager evaluation is problematic. (E.g., expensive or side-effectful.)
 
