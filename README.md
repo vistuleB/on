@@ -104,9 +104,7 @@ Note that `on.ok` is isomorphic to `result.try`.
 
 Note that 'on' expects simple values, not 0-argument callbacks, for 0-ary variants by default. The `lazy_` version of the relevant API call (e.g., `on.lazy_none_some` instead of `on.none_some`) reverts to lazy evaluation via a 0-argument callback.
 
-### Examples
-
-#### Example 1
+### Example 1
 
 ```gleam
 import gleam/io
@@ -139,7 +137,7 @@ pub fn main() -> Nil {
 }
 ```
 
-#### Example 1
+### Example 2
 
 ```gleam
 import gleam/float
