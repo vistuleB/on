@@ -11,6 +11,8 @@ Ergonomic guards for the core gleam types to apply with the `<- use` syntax.
 gleam add on@1
 ```
 
+## Overview
+
 All API calls in the package adhere to the same structure. Specifically, an 'on' API
 call lists the types over which it maps in the function name, in the same order as
 the arguments:
@@ -55,7 +57,8 @@ pub fn ok_error(
 ```
 
 Specifically, we would use `on.error_ok` to keep working with an `Ok()` payload, while
-mapping and early-returning an `Error()` value:
+mapping and early-returning an `Error()` value, while `on.ok_error` would be used
+for the reverse scenario in which the `Error()` happens to be the happy path:
 
 ```
 use ok_payload <- on.error_ok(
@@ -66,17 +69,33 @@ use ok_payload <- on.error_ok(
 // keep working with 'ok_payload' down here
 ```
 
-Symmetrically, `on.ok_error` would be used for cases where the `Ok`
-variant can be early-returned after processing step, while `Error`
-variant requires further processing.
+```
+use error_payload <- on.ok_error(
+  some_result,
+  fn (ok_payload) { /* map ok_payload to desired return value here */ },
+)
 
-Specialized guards may elide a variant when an identity-like mapping
-is to be used on the elided variant. For example, `on.some` is the
-version of `on.none_some` for which the `None` variant is mapped to
+// keep working with 'error_payload' down here
+```
+
+<!-- Symmetrically, `on.ok_error` would be used for cases where the `Ok`
+variant can be early-returned after processing step, while `Error`
+variant requires further processing. -->
+
+## Eliding variants with identity mappings
+
+Specialized callbacks are provided to elide a variant
+callback, for which the identity-like mapping will be
+applied by default.
+
+For example, `on.some` can be thought of as the
+speciliazed version of `on.none_some` for which the
+`on_none` callback maps `None` to
 `None` [of an `Option(a)` to an `Option(b)`], 
-while `on.ok` is the specialization of `on.error_ok` to the case
-where the `on_error` that maps `Error(b)` to `Error(b)` [of a `Result(a, b)`
-to a `Result(c, b)`]:
+whereas `on.ok` can be thought of as the specialized
+version of `on.error_ok` for which 
+where the `on_error` callback maps `Error(b)` 
+to `Error(b)` [of a `Result(a, b)` to a `Result(c, b)`]:
 
 ```
 pub fn some(
@@ -102,9 +121,13 @@ pub fn ok(
 }
 ```
 
-Note that `on.ok` is isomorphic to `result.try`.
+(As such, `on.ok` is ismorphic to `result.try`.)
 
-Note that 'on' expects simple values, not 0-argument callbacks, for 0-ary variants by default. The `lazy_` version of the relevant API call (e.g., `on.lazy_none_some` instead of `on.none_some`) reverts to lazy evaluation via a 0-argument callback.
+## Lazy evaluation defaults
+
+Note that 'on' expects simple values, not 0-argument callbacks, for 0-ary variants by default. The `lazy_` version of the relevant API call (e.g., `on.lazy_none_some` instead of `on.none_some`) should be used if lazy evaluation is desired.
+
+## Examples
 
 ### Example 1
 
