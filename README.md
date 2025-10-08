@@ -68,13 +68,25 @@ Symmetrically, `on.ok_error` would be used for cases where the `Ok`
 variant can be early-returned after processing step, while `Error`
 variant requires further processing.
 
-If a callback would map a value to itself, then a specialized API function
-that elides that callback will exist.
+Specialized guards may elide a variant when an identity-like mapping
+is to be used on the elided variant. For example, `on.some` is the
+version of `on.none_some` for which the `None` variant is mapped to
+`None` [of an `Option(a)` to an `Option(b)`], 
+while `on.ok` is the specialization of `on.error_ok` to the case
+where the `on_error` that maps `Error(b)` to `Error(b)` [of a `Result(a, b)`
+to a `Result(c, b)`]:
 
-For example, `on.ok` is the specialization of `on.error_ok` to the case
-where the `on_error` callback would be the identify function (or more
-precisely the function that maps the `Error(b)` of a `Result(a, b)` to
-the `Error(b)` of a `Result(c, b)`):
+```
+pub fn some(
+  option: Option(a),
+  on_some f2: fn(a) -> Option(c),
+) -> Option(c) {
+  case option {
+    None -> None
+    Some(a) -> f2(a)
+  }
+}
+```
 
 ```
 pub fn ok(
