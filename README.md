@@ -24,7 +24,7 @@ pub fn variant1_variant2_variant3(
 )
 ```
 
-For example `on.error_ok`:
+For example `on.error_ok` is defined by:
 
 ```
 pub fn error_ok(
@@ -39,7 +39,7 @@ pub fn error_ok(
 }
 ```
 
-Symmetrically `on.ok_error`:
+While `on.ok_error` reverses the order of the callbacks:
 
 ```
 pub fn ok_error(
