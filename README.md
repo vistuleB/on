@@ -118,7 +118,7 @@ import simplifile
 fn read_file(path: String) -> Result(String, String) {
   simplifile.read(path)
   |> result.map_error(
-    fn(_) { "could not read " <> path } 
+    fn(e) { "could not read '" <> path <> "' because of error '" <> string.inspect(e) <> "'" } 
   )
 }
 
