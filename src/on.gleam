@@ -935,3 +935,53 @@ pub fn singleton_gt1_empty(
     [] -> f3()
   }
 }
+
+// ****************
+// * Return(a, b) *
+// ****************
+
+/// A choice type whose semantics indicate intent to return from local
+/// scope or not. To be paired with 'on.not_return'.
+pub type Return(a, b) {
+  Return(a)
+  NotReturn(b)
+}
+
+/// Given a value of type Return(a, b) and a callback f(b) -> a, returns
+/// f(b1) if the value has the form 'NotReturn(b1)' and returns a1
+/// if the value has the form 'Return(a1)'.
+/// 
+/// ### Example 1
+///
+/// ```gleam
+/// let #(string1, string2) = #("bob", "")
+/// 
+/// use _ <- on.not_return(case string {
+///   "" -> Return(#(string1, string1))
+///   _ -> NotReturn(Nil)
+/// })
+/// // -> execution discontinues, scope returns #("bob", "bob")
+/// ```
+///
+/// ### Example 2
+///
+/// ```gleam
+/// let #(string1, string2) = #("bob", "alice")
+/// 
+/// use _ <- on.not_return(case string {
+///   "" -> Return(#(string1, string1))
+///   _ -> NotReturn(Nil)
+/// })
+/// // -> execution proceeds; the current scope must
+/// // return a #(String, String)
+/// ```
+///
+pub fn not_return(
+  r: Return(a, b),
+  on_not_return f1: fn(b) -> a,
+) -> a {
+  case r {
+    Return(a) -> a
+    NotReturn(b) -> f1(b)
+  }
+}

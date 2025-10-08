@@ -9,36 +9,11 @@ Ergonomic guards for the core gleam types to apply with the `<- use` syntax.
 gleam add on@1
 ```
 
-To be compared with the [given](https://hexdocs.pm/given/) package. While [given](https://hexdocs.pm/given/) uses truthiness-based semantics, [on](https://hexdocs.pm/on/) uses a "variantyness" -based approach.
-
-To wit, the general [given](https://hexdocs.pm/given/) API call has the form and usage:
-
-```
-// 'given' package
-
-fn statement_of_truthiness_about_thing(
-  thing: Thing,
-  else_return f1: fn(falsiness_payload) -> ...,   // what to compute if statement does not hold
-  return f2: fn(truthiness_payload) -> ...,       // what to compute if statement holds
-)
-```
+All API calls in the package adhere to the same structure. Specifically, an 'on' API
+call lists the types over which it maps in the function name, in the same order as
+the arguments:
 
 ```
-// usage
-
-use truthiness_payload <- given.statement_of_truthiness_about_thing(
-  some_thing(),
-  what_to_do_with_falsiness_payload,              // the 'f1' from above
-)
-
-...
-```
-
-While for [on](https://hexdocs.pm/on/) the general form and usage is:
-
-```
-// 'on' package
-
 fn variant1_variant2_variant3(
   thing: Thing,
   on_variant1 f1: fn(variant1_payload) -> ...,
@@ -47,21 +22,77 @@ fn variant1_variant2_variant3(
 )
 ```
 
-```
-// usage
+Concretely, for example, we have `on.error_ok`:
 
-use variant3_payload <- on.variant1_variant2_variant3(
-  some_thing(),
-  what_to_do_with_variant1_payload,
-  what_to_do_with_variant2_payload,
+```
+pub fn error_ok(
+  result: Result(a, b),
+  on_error f1: fn(b) -> c,
+  on_ok f2: fn(a) -> c,
+) -> c {
+  case result {
+    Error(b) -> f1(b)
+    Ok(a) -> f2(a)
+  }
+}
+```
+
+Symmetrically, `on.ok_error`:
+
+```
+pub fn ok_error(
+  result: Result(a, b),
+  on_ok f1: fn(b) -> c,
+  on_error f2: fn(a) -> c,
+) -> c {
+  case result {
+    Error(b) -> f2(b)
+    Ok(a) -> f1(a)
+  }
+}
+```
+
+We can use `on.error_ok` to keep working with an `Ok()` payload, while
+mapping and early-returning an `Error()` value:
+
+```
+use ok_payload <- on.error_ok(
+  some_result,
+  fn (e) { /* map e to desired return value here */ },
 )
 
-...
+// keep working with 'ok_payload' down here
 ```
+
+Symmetrically, `on.ok_error` would be used for cases where the `Ok`
+variant can be early-returned after processing step, while `Error`
+variant requires further processing.
+
+If a callback would map a value to itself, then a specialized API function
+that elides that callback will exist.
+
+For example, `on.ok` is the specialization of `on.error_ok` to the case
+where the `on_error` callback would be the identify function (or more
+precisely the function that maps the `Error(b)` of a `Result(a, b)` to
+the `Error(b)` of a `Result(c, b)`):
+
+```
+pub fn ok(
+  result: Result(a, b),
+  on_ok f2: fn(a) -> Result(c, b),
+) -> Result(c, b) {
+  case result {
+    Error(b) -> Error(b)
+    Ok(a) -> f2(a)
+  }
+}
+```
+
+As such, `on.ok` is isomorphic to `result.try` from the standard library.
 
 Note that [on](https://hexdocs.pm/on/) expects values, not callbacks, for 0-ary variants. Use the `lazy_` version of the API call (e.g., `on.lazy_true_false` instead of `on.true_false`) if eager evaluation is problematic. (E.g., expensive or side-effectful.)
 
-Variants are elided when mapped to themselves. E.g., `on.ok` is the specialized version of `on.error_ok` for which the `Error`-variant callback maps `Error(b)` to `Error(b)`. (I.e., `on.ok` is isomorphic to `result.try`.)
+### Examples
 
 #### Example 1
 
@@ -74,10 +105,7 @@ import simplifile
 fn read_file(path: String) -> Result(String, String) {
   simplifile.read(path)
   |> result.map_error(
-    // map the error to an 'Error(String)'
-    // one could also use 'on.error' instead of 'result.map_error'
-    // as the two functions are isomorphic:
-    fn(e) { Error("simplifile FileError: " <> string.inspect(e)) } 
+    fn(_) { "could not read " <> path } 
   )
 }
 
