@@ -1,5 +1,7 @@
 # on
 
+[logo](logo.svg)
+
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
