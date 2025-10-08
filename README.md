@@ -103,7 +103,7 @@ pub fn ok(
 (Note that `on.ok` is isomorphic to `result.try`, but `on.error_ok` and `on.ok_error` have
 no analogues in the standard library.)
 
-Note that [on](https://hexdocs.pm/on/) expects values, not callbacks, for 0-ary variants. Use the `lazy_` version of the API call (e.g., `on.lazy_true_false` instead of `on.true_false`) if eager evaluation is problematic. (E.g., expensive or side-effectful.)
+Note that 'on' expects simple values, not 0-argument callbacks, for 0-ary variants by default. The `lazy_` version of the relevant API call (e.g., `on.lazy_none_some` instead of `on.none_some`) reverts to lazy evaluation via a 0-argument callback.
 
 ### Examples
 
