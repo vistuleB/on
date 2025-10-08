@@ -100,7 +100,8 @@ pub fn ok(
 }
 ```
 
-As such, `on.ok` is isomorphic to `result.try` from the standard library.
+(Note that `on.ok` is isomorphic to `result.try`, but `on.error_ok` and `on.ok_error` have
+no analogues in the standard library.)
 
 Note that [on](https://hexdocs.pm/on/) expects values, not callbacks, for 0-ary variants. Use the `lazy_` version of the API call (e.g., `on.lazy_true_false` instead of `on.true_false`) if eager evaluation is problematic. (E.g., expensive or side-effectful.)
 
