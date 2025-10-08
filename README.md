@@ -114,17 +114,10 @@ import gleam/string
 import on
 import simplifile
 
-fn read_file(path: String) -> Result(String, String) {
-  simplifile.read(path)
-  |> result.map_error(
-    fn(e) { "could not read '" <> path <> "' because of error '" <> string.inspect(e) <> "'" } 
-  )
-}
-
 pub fn main() -> Nil {
   use contents <- on.error_ok(
-    read_file("./sample.txt"),
-    on_error: fn(msg) { io.println("\n" <> msg) }
+    simplifile.read("./sample.txt"),
+    on_error: fn(e) { io.println("simplifile.read error: " <> string.inspect(e)) }
   )
 
   use first, rest <- on.lazy_empty_nonempty(
