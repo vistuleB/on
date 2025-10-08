@@ -22,7 +22,7 @@ fn variant1_variant2_variant3(
 )
 ```
 
-Concretely, for example, we have `on.error_ok`:
+For example `on.error_ok`:
 
 ```
 pub fn error_ok(
@@ -37,7 +37,7 @@ pub fn error_ok(
 }
 ```
 
-Symmetrically, `on.ok_error`:
+Symmetrically `on.ok_error`:
 
 ```
 pub fn ok_error(
@@ -52,7 +52,7 @@ pub fn ok_error(
 }
 ```
 
-We can use `on.error_ok` to keep working with an `Ok()` payload, while
+Specifically, we would use `on.error_ok` to keep working with an `Ok()` payload, while
 mapping and early-returning an `Error()` value:
 
 ```
