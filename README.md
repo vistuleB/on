@@ -16,7 +16,7 @@ call lists the types over which it maps in the function name, in the same order 
 the arguments:
 
 ```
-fn variant1_variant2_variant3(
+pub fn variant1_variant2_variant3(
   thing: Thing,
   on_variant1 f1: fn(variant1_payload) -> ...,
   on_variant2 f1: fn(variant2_payload) -> ...,
