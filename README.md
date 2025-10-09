@@ -144,7 +144,7 @@ use a <- on.ok(result_value)
 // otherwise code has already returned Error(b)
 ```
 
-(Note that `on.ok` is isomorphic to `result.try`.)
+As such, `on.ok` is isomorphic to `result.try`.
 
 The list of all such 1-callback API functions is:
 
@@ -159,21 +159,48 @@ on.empty     // maps [first, ..rest] to [first, ..rest]
 on.nonempty  // maps [] to []
 ```
 
+(Note that `on.true` and `on.false` are expected to get
+scant use as it is unusual to want to early-return only "one half
+of a boolean". But an application might be a case where
+some side-effect such as printing to I/O is desired for the
+other half, before returning a final value.)
+
 ## Ternary variants for List(a) values
 
-At the other end of the spectrum the package provides some API
+At the other end of the spectrum 'on' provides API
 functions that take three instead of two callbacks for `List(a)` values,
-since it can be useful to distinguish between the cases where a list
-has 0, 1, or greater than 1 values (the latter being abbreviated `gt1`).
-
+specifically to distinguish between the cases where a list
+has 0, 1, or greater than 1 values. (The latter being abbreviated `gt1`
+in function names.)
 In comporting with the pattern followed by other API calls such
 three-variant function have names of the form `on.a_b_c` where `a`,
-`b`, `c` list the variants in the same order as the callbacks should 
+`b`, `c` list the variants in the same order as the callbacks.
 
-For example `on.empty_nonempty_gt1`
+For example 'on' offers `on.empty_singleton_gt1`:
 
 ```
+pub fn empty_singleton_gt1(
+  list: List(a),
+  on_empty c: c,
+  on_singleton f2: fn(a) -> c,
+  on_gt1 f3: fn(a, a, List(a)) -> c,
+) -> c {
+  case list {
+    [] -> c
+    [first] -> f2(first)
+    [first, second, ..rest] -> f3(first, second, rest)
+  }
+}
+```
 
+Altogether, such API calls exist such as to allow isolating each
+each of these three states of a list while early-processing the
+two others:
+
+```
+on.empty_singleton_gt1
+on.empty_gt1_singleton
+on.singleton_gt1_empty
 ```
 
 ## Examples
