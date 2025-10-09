@@ -13,10 +13,11 @@ gleam add on@1
 
 ## Overview
 
-All ‘on’ API functions adhere to the same pattern exemplified by `on.error_ok`,
-whose implementation is copy-pasted here:
+All ‘on’ API functions adhere to the same pattern exemplified by `on.error_ok`:
 
 ```
+// 'on' package
+
 pub fn error_ok(
   result: Result(a, b),
   on_error f1: fn(b) -> c,
@@ -42,7 +43,7 @@ use ok_payload <- on.error_ok(
 // keep working with 'ok_payload' down here
 ```
 
-By reversing the order of callbacks, `on.ok_error` allows the `Error()` value to
+Following this pattern, `on.ok_error` allows the `Error()` value to
 become the happy path:
 
 ```
