@@ -77,22 +77,28 @@ on.empty_nonempty
 on.nonempty_empty
 ```
 
-Note that 'on' uses `none`, `
+For 0-ary variants (i.e. variants without a payload) eager evaluation
+is used by default, as in the Gleam standard library. Use the `lazy_`
+prefix to access lazy evaluation variants:
+
+```
+on.lazy_none_some           // instead of on.none_some
+on.lazy_true_false          // instead of on.true_false
+on.lazy_false_true          // instead of on.false_true
+on.lazy_empty_nonempty      // instead of on.empty_nonempty
+```
+
+(The second callback always uses lazy evaluation since otherwise the
+API function could not be used with the `use <-` syntax.)
 
 ## Eliding variants with identity mappings
 
-Specialized callbacks are provided to elide a variant
-callback when the simple identity-like mapping (e.g. mapping
+Specialized API functions whose names refer to
+only one variant when the simple identity-like mapping (e.g. mapping
 `None` variant of an `Option(a)` to the `None` variant of
-an `Option(b)`) should be used for that variant.
+an `Option(b)`) should be used for the second (elided) variant.
 
-For example, `on.some` is  version of `on.none_some` for which the
-`on_none` callback maps `None` to
-`None` [of an `Option(a)` to an `Option(b)`], 
-whereas `on.ok` can be thought of as the specialized
-version of `on.error_ok` for which 
-where the `on_error` callback maps `Error(b)` 
-to `Error(b)` [of a `Result(a, b)` to a `Result(c, b)`]:
+For example `on.some`:
 
 ```
 pub fn some(
@@ -106,6 +112,8 @@ pub fn some(
 }
 ```
 
+And `on.ok`:
+
 ```
 pub fn ok(
   result: Result(a, b),
@@ -118,11 +126,20 @@ pub fn ok(
 }
 ```
 
+The list of all such 1-callback API functions is:
+
+```
+on.ok        // maps Error(b) to Error(b)
+on.error     // maps Ok(a) to Ok(a)
+on.some      // maps None to None
+on.none      // maps Some(a) to Some(a)
+on.true      // maps False to False
+on.false     // maps True to True
+on.empty     // maps [first, ..rest] to [first, ..rest]
+on.nonempty  // maps [] to []
+```
+
 (As such, `on.ok` is ismorphic to `result.try`.)
-
-## Lazy evaluation defaults
-
-Note that 'on' expects simple values, not 0-argument callbacks, for 0-ary variants by default. The `lazy_` version of the relevant API call (e.g., `on.lazy_none_some` instead of `on.none_some`) should be used if lazy evaluation is desired.
 
 ## Examples
 
