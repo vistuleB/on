@@ -186,44 +186,61 @@ half of a boolean value.)
 ## Ternary variants for List(a) values
 
 At the other end of the spectrum 'on' provides API
-functions that take three instead of two callbacks for `List(a)` values,
+functions that take three callbacks for `List(a)` values,
 specifically to distinguish between the cases where a list
-has 0, 1, or greater than 1 values. (The latter being abbreviated `gt1`
-in function names.)
-In comporting with the pattern followed by other API calls such
-three-variant function have names of the form `on.a_b_c` where `a`,
+has 0, 1, or greater than 1 values, with the latter being abbreviated `_gt1`
+in function names.
+In comporting with the pattern followed by other 'on' API functions, such
+three-variant guards have names of the form `on.a_b_c` where `a`,
 `b`, `c` list the variants in the same order as the callbacks.
 
-For example 'on' offers `on.empty_singleton_gt1`:
+The names of these functions are `empty_singleton_gt1`,
+`empty_gt1_singleton`, and `singleton_gt1_empty`, and their `lazy_`
+varsions for the `empty` variant:
 
 ```gleam
-pub fn empty_singleton_gt1(
+on.empty_singleton_gt1
+on.empty_gt1_singleton
+on.singleton_gt1_empty
+on.lazy_empty_singleton_gt1
+on.lazy_empty_gt1_singleton
+```
+
+For example, `on.lazy_empty_singleton_gt1` has the following implementation:
+
+```gleam
+// 'on' package
+
+pub fn lazy_empty_singleton_gt1(
   list: List(a),
-  on_empty c: c,
+  on_empty f1: fn() -> c,
   on_singleton f2: fn(a) -> c,
   on_gt1 f3: fn(a, a, List(a)) -> c,
 ) -> c {
   case list {
-    [] -> c
+    [] -> f1()
     [first] -> f2(first)
     [first, second, ..rest] -> f3(first, second, rest)
   }
 }
 ```
 
-Altogether, such API calls exist such as to allow isolating each
-each of these three states of a list while early-processing the
-two others:
+The usage would look like
 
 ```gleam
-on.empty_singleton_gt1
-on.empty_gt1_singleton
-on.singleton_gt1_empty
+// 'on' consumer
+
+use first, second, rest <- on.lazy_empty_singleton_gt1(
+  some_list : List(a),
+  fn() { /* ... */ },
+  fn(some_element: a) { /* ... */ },
+)
+
+// keep working with first: a, second: a, and rest: List(a)
+// down here
 ```
 
 ## Examples
-
-### Example 1
 
 ```gleam
 import gleam/io
@@ -255,8 +272,6 @@ pub fn main() -> Nil {
   // ...
 }
 ```
-
-### Example 2
 
 ```gleam
 import gleam/float
@@ -302,14 +317,7 @@ pub fn parse_number_and_optional_css_unit(
   s: String,
 ) -> Result(#(Float, Option(CSSUnit)), Nil) {
   let #(before_unit, unit) = extract_css_unit(s)
-  use number <- on.ok(parse_to_float(before_unit))
+  use number <- on.ok(parse_to_float(before_unit))      // on.ok === result.try
   Ok(#(number, unit))
 }
-```
-
-## Development
-
-```sh
-gleam run   # Run the project
-gleam test  # Run the tests
 ```
