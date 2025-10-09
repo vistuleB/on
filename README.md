@@ -13,22 +13,11 @@ gleam add on@1
 
 ## Overview
 
-All API calls in the package adhere to the same structure. Specifically, an 'on' API
-call lists the types over which it maps in the function name, in the same order as
-the arguments:
+All ‘on’ API functions adhere to the same pattern exemplified by `on.error_ok`: 
 
 ```
-pub fn variant1_variant2_variant3(
-  thing: Thing,
-  on_variant1 f1: fn(variant1_payload) -> ...,
-  on_variant2 f1: fn(variant2_payload) -> ...,
-  on_variant3 f1: fn(variant3_payload) -> ...,
-)
-```
+// 'on' package
 
-For example `on.error_ok` is defined by:
-
-```
 pub fn error_ok(
   result: Result(a, b),
   on_error f1: fn(b) -> c,
@@ -41,26 +30,11 @@ pub fn error_ok(
 }
 ```
 
-While `on.ok_error` reverses the order of the callbacks:
+To be consumed like so:
 
 ```
-pub fn ok_error(
-  result: Result(a, b),
-  on_ok f1: fn(b) -> c,
-  on_error f2: fn(a) -> c,
-) -> c {
-  case result {
-    Error(b) -> f2(b)
-    Ok(a) -> f1(a)
-  }
-}
-```
+// 'on' consumer
 
-Specifically, we would use `on.error_ok` to keep working with an `Ok()` payload, while
-mapping and early-returning an `Error()` value, while `on.ok_error` would be used
-for the reverse scenario in which the `Error()` happens to be the happy path:
-
-```
 use ok_payload <- on.error_ok(
   some_result,
   fn (e) { /* map e to desired return value here */ },
@@ -68,6 +42,9 @@ use ok_payload <- on.error_ok(
 
 // keep working with 'ok_payload' down here
 ```
+
+By reversing the order of callbacks, `on.ok_error` allows the `Error()` value to
+become the happy path:
 
 ```
 use error_payload <- on.ok_error(
@@ -78,18 +55,38 @@ use error_payload <- on.ok_error(
 // keep working with 'error_payload' down here
 ```
 
-<!-- Symmetrically, `on.ok_error` would be used for cases where the `Ok`
-variant can be early-returned after processing step, while `Error`
-variant requires further processing. -->
+Similar two-variant API callbacks are provided not only for `Result`
+but also for `Bool`, `Option` and `List` (the latter vis-à-vis empty- or
+non-empty- lists):
+
+```
+// Result
+on.error_ok
+on.ok_error
+
+// Option
+on.none_some
+on.some_none
+
+// Bool
+on.true_false
+on.false_true
+
+// List
+on.empty_nonempty
+on.nonempty_empty
+```
+
+Note that 'on' uses `none`, `
 
 ## Eliding variants with identity mappings
 
 Specialized callbacks are provided to elide a variant
-callback, for which the identity-like mapping will be
-applied by default.
+callback when the simple identity-like mapping (e.g. mapping
+`None` variant of an `Option(a)` to the `None` variant of
+an `Option(b)`) should be used for that variant.
 
-For example, `on.some` can be thought of as the
-speciliazed version of `on.none_some` for which the
+For example, `on.some` is  version of `on.none_some` for which the
 `on_none` callback maps `None` to
 `None` [of an `Option(a)` to an `Option(b)`], 
 whereas `on.ok` can be thought of as the specialized
