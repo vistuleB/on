@@ -30,7 +30,7 @@ pub fn error_ok(
 }
 ```
 
-To be consumed like so:
+A consumer of the package uses the API like so:
 
 ```gleam
 // 'on' consumer
@@ -43,7 +43,7 @@ use ok_payload <- on.error_ok(
 // ...keep working with 'ok_payload' down here
 ```
 
-Following this pattern, 
+Following the same pattern, 
 `on.ok_error` allows the `Error` variant to
 correspond to the happy path instead, by reversing
 the order of callbacks:
