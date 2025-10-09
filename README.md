@@ -193,20 +193,23 @@ half of a boolean value.)
 At the other end of the spectrum 'on' provides API
 functions that take three callbacks for `List(a)` values,
 specifically to distinguish between the cases where a list
-has 0, 1, or greater than 1 values, with the latter being abbreviated `_gt1`
-in function names.
+has 0, 1, or greater than 1 values, with the 
+second and last being named as `singleton`, `gt1`
+respectively in function names.
+
 In comporting with the pattern followed by other 'on' API functions, such
 three-variant guards have names of the form `on.a_b_c` where `a`,
 `b`, `c` list the variants in the same order as the callbacks.
 
 The names of these functions are `empty_singleton_gt1`,
-`empty_gt1_singleton`, and `singleton_gt1_empty`, and their `lazy_`
-varsions for the `empty` variant:
+`empty_gt1_singleton`, and `singleton_gt1_empty`, together with their `lazy_`
+varsions for the 0-ary `empty` variant:
 
 ```gleam
 on.empty_singleton_gt1
 on.empty_gt1_singleton
 on.singleton_gt1_empty
+
 on.lazy_empty_singleton_gt1
 on.lazy_empty_gt1_singleton
 ```
@@ -230,7 +233,7 @@ pub fn lazy_empty_singleton_gt1(
 }
 ```
 
-The usage would look like
+Its usage would look like:
 
 ```gleam
 // 'on' consumer
