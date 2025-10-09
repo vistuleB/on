@@ -162,7 +162,7 @@ use a <- on.ok(result_value)
 // otherwise code has already returned Error(b)
 ```
 
-(Note that `on.ok` is isomorphic to `result.try`.)
+(One can note that `on.ok` is isomorphic to `result.try` from the standard library.)
 
 The list of all such 1-callback API functions is:
 
@@ -178,10 +178,10 @@ on.nonempty  // maps [] to []
 ```
 
 (Note that `on.true` and `on.false` are expected to get
-scant use as it is unusual to want to early-return only "one half
-of a boolean". But an application might be a case where
-some side-effect such as printing to I/O is desired for the
-other half, before returning a final value.)
+less use as it is unusual to want to early-return only "one half
+of a boolean". Nn application might be a case where
+some side-effect such as printing to I/O is desired for only one
+half of a boolean value.)
 
 ## Ternary variants for List(a) values
 
