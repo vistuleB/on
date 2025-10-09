@@ -233,7 +233,7 @@ pub fn lazy_empty_singleton_gt1(
 }
 ```
 
-Its usage would look like:
+Sample usage would resemble:
 
 ```gleam
 // 'on' consumer
