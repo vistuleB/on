@@ -13,11 +13,10 @@ gleam add on@1
 
 ## Overview
 
-All ‘on’ API functions adhere to the same pattern exemplified by `on.error_ok`: 
+All ‘on’ API functions adhere to the same pattern exemplified by `on.error_ok`,
+whose implementation is copy-pasted here:
 
 ```
-// 'on' package
-
 pub fn error_ok(
   result: Result(a, b),
   on_error f1: fn(b) -> c,
@@ -55,9 +54,10 @@ use error_payload <- on.ok_error(
 // keep working with 'error_payload' down here
 ```
 
+Etc.
+
 Similar two-variant API callbacks are provided not only for `Result`
-but also for `Bool`, `Option` and `List` (the latter vis-à-vis empty- or
-non-empty- lists):
+but also for `Bool`, `Option` and `List`:
 
 ```
 // Result
@@ -91,14 +91,14 @@ on.lazy_empty_nonempty      // instead of on.empty_nonempty
 (The second callback always uses lazy evaluation since otherwise the
 API function could not be used with the `use <-` syntax.)
 
-## Eliding variants with identity mappings
+## Skipping variants for which the identity callback should be used
 
 Specialized API functions whose names refer to
 only one variant when the simple identity-like mapping (e.g. mapping
 `None` variant of an `Option(a)` to the `None` variant of
 an `Option(b)`) should be used for the second (elided) variant.
 
-For example `on.some`:
+For example `on.some` only expects one callback to be provided:
 
 ```
 pub fn some(
@@ -112,7 +112,16 @@ pub fn some(
 }
 ```
 
-And `on.ok`:
+To be used like so:
+
+```
+use x <- on.some(option_value)
+
+// work with payload x down here, in case option_value == Some(x);
+// otherwise code has already returned None
+```
+
+Likewise, `on.ok` only expects a callback for the `Ok` payload:
 
 ```
 pub fn ok(
@@ -125,6 +134,17 @@ pub fn ok(
   }
 }
 ```
+
+To be used like so:
+
+```
+use a <- on.ok(result_value)
+
+// work with payload x down here, in case result_value == Ok(a);
+// otherwise code has already returned Error(b)
+```
+
+(Note that `on.ok` is isomorphic to `result.try`.)
 
 The list of all such 1-callback API functions is:
 
@@ -139,13 +159,22 @@ on.empty     // maps [first, ..rest] to [first, ..rest]
 on.nonempty  // maps [] to []
 ```
 
-(As such, `on.ok` is ismorphic to `result.try`.)
-
 ## Ternary variants for List(a) values
 
-At the other extreme, the package provides some API
-functions that take 3 instead of 2 callbacks, namely
-for `List(a)` values. The callbacks 
+At the other end of the spectrum the package provides some API
+functions that take three instead of two callbacks for `List(a)` values,
+since it can be useful to distinguish between the cases where a list
+has 0, 1, or greater than 1 values (the latter being abbreviated `gt1`).
+
+In comporting with the pattern followed by other API calls such
+three-variant function have names of the form `on.a_b_c` where `a`,
+`b`, `c` list the variants in the same order as the callbacks should 
+
+For example `on.empty_nonempty_gt1`
+
+```
+
+```
 
 ## Examples
 
