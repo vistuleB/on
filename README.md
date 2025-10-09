@@ -141,6 +141,12 @@ on.nonempty  // maps [] to []
 
 (As such, `on.ok` is ismorphic to `result.try`.)
 
+## Ternary variants for List(a) values
+
+At the other extreme, the package provides some API
+functions that take 3 instead of 2 callbacks, namely
+for `List(a)` values. The callbacks 
+
 ## Examples
 
 ### Example 1
