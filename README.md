@@ -248,6 +248,12 @@ use first, second, rest <- on.lazy_empty_singleton_gt1(
 // down here
 ```
 
+## See also
+
+The [given](https://github.com/inoas/gleam-given) package,
+that uses a different naming convention. (Does not include
+1-ary or 3-ary callbacks.)
+
 ## Examples
 
 ```gleam
