@@ -72,10 +72,8 @@ use error_payload <- on.ok_error(
 // keep working with 'error_payload' down here
 ```
 
-Etc.
-
-Similar two-variant API callbacks are provided not only for `Result`
-but also for `Bool`, `Option` and `List`:
+The complete list of similar two-variant guards provided by the
+package is:
 
 ```
 // Result
@@ -95,15 +93,16 @@ on.empty_nonempty
 on.nonempty_empty
 ```
 
-For 0-ary variants (i.e. variants without a payload) eager evaluation
-is used by default, as in the Gleam standard library. Use the `lazy_`
-prefix to access lazy evaluation variants:
+However, note that for 0-ary variants (i.e. variants without a payload),
+the package expects a value instead of a callback, as eager evaluation
+is considered default, as in the Gleam standard library. As in the standard
+library, apply the `lazy_` prefix to access lazy evaluation versions:
 
 ```
-on.lazy_none_some           // instead of on.none_some
-on.lazy_true_false          // instead of on.true_false
-on.lazy_false_true          // instead of on.false_true
-on.lazy_empty_nonempty      // instead of on.empty_nonempty
+on.lazy_none_some           // (instead of on.none_some)
+on.lazy_true_false          // (instead of on.true_false)
+on.lazy_false_true          // (instead of on.false_true)
+on.lazy_empty_nonempty      // (instead of on.empty_nonempty)
 ```
 
 (The second callback always uses lazy evaluation since otherwise the
