@@ -5,7 +5,7 @@
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
-Ergonomic guards for the core gleam types to apply with the `<- use` syntax.
+Guards for the core gleam types to apply with the `<- use` syntax.
 
 ```sh
 gleam add on@1
@@ -30,14 +30,14 @@ pub fn error_ok(
 }
 ```
 
-A consumer of the package uses the API like so:
+A package consumer would use `on.error_ok` like so:
 
 ```gleam
 // 'on' consumer
 
 use ok_payload <- on.error_ok(
   some_result,
-  fn (e) { /* map e to desired return value here */ },
+  fn (error_payload) { /* map error_payload to desired return value here */ },
 )
 
 // ...keep working with 'ok_payload' down here
@@ -188,7 +188,7 @@ of a boolean". An application might be a case where
 some side-effect such as printing to I/O is desired for only one
 half of a boolean value.)
 
-## Ternary variants for List(a) values
+## Ternary guards for List(a) values
 
 At the other end of the spectrum 'on' provides API
 functions that take three callbacks for `List(a)` values,
