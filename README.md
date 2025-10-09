@@ -93,7 +93,7 @@ on.empty_nonempty
 on.nonempty_empty
 ```
 
-However, note that for 0-ary variants (i.e. variants without a payload),
+However, note that for 0-ary variants
 the package expects a value instead of a callback, as eager evaluation
 is considered default, as in the Gleam standard library. As in the standard
 library, apply the `lazy_` prefix to access lazy evaluation versions:
@@ -105,8 +105,8 @@ on.lazy_false_true          // (instead of on.false_true)
 on.lazy_empty_nonempty      // (instead of on.empty_nonempty)
 ```
 
-(The second callback always uses lazy evaluation since otherwise the
-API function could not be used with the `use <-` syntax.)
+The second callback always uses lazy evaluation since otherwise the
+API function would not be usable with the `use <-` syntax.
 
 ## Skipping variants for which the identity callback should be used
 
@@ -115,7 +115,8 @@ only one variant when the simple identity-like mapping (e.g. mapping
 `None` variant of an `Option(a)` to the `None` variant of
 an `Option(b)`) should be used for the second (elided) variant.
 
-For example `on.some` only expects one callback to be provided:
+For example, `on.some` only expects one callback—the second defaults
+to the identity(-like) mapping:
 
 ```gleam
 pub fn some(
