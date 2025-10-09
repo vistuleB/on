@@ -105,9 +105,6 @@ on.lazy_false_true          // (instead of on.false_true)
 on.lazy_empty_nonempty      // (instead of on.empty_nonempty)
 ```
 
-The second callback always uses lazy evaluation since otherwise the
-API function would not be usable with the `use <-` syntax.
-
 ## Skipping variants for which the identity callback should be used
 
 Specialized API functions whose names refer to
@@ -119,6 +116,8 @@ For example, `on.some` only expects one callback—the second defaults
 to the identity(-like) mapping:
 
 ```gleam
+// 'on' package
+
 pub fn some(
   option: Option(a),
   on_some f2: fn(a) -> Option(c),
@@ -133,6 +132,8 @@ pub fn some(
 To be used like so:
 
 ```gleam
+// 'on' consumer
+
 use x <- on.some(option_value)
 
 // work with payload x down here, in case option_value == Some(x);
@@ -142,6 +143,8 @@ use x <- on.some(option_value)
 Likewise, `on.ok` only expects a callback for the `Ok` payload:
 
 ```gleam
+// 'on' package
+
 pub fn ok(
   result: Result(a, b),
   on_ok f2: fn(a) -> Result(c, b),
@@ -156,13 +159,15 @@ pub fn ok(
 To be used like so:
 
 ```gleam
+// 'on' consumer
+
 use a <- on.ok(result_value)
 
 // work with payload x down here, in case result_value == Ok(a);
 // otherwise code has already returned Error(b)
 ```
 
-(One can note that `on.ok` is isomorphic to `result.try` from the standard library.)
+(This is isomorphic to `result.try` from the standard library.)
 
 The list of all such 1-callback API functions is:
 
@@ -178,8 +183,8 @@ on.nonempty  // maps [] to []
 ```
 
 (Note that `on.true` and `on.false` are expected to get
-less use as it is unusual to want to early-return only "one half
-of a boolean". Nn application might be a case where
+less use as it is somewhat unusual to want to early-return only "one half
+of a boolean". An application might be a case where
 some side-effect such as printing to I/O is desired for only one
 half of a boolean value.)
 
