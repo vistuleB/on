@@ -15,7 +15,7 @@ gleam add on@1
 
 All ‘on’ API functions adhere to the same pattern exemplified by `on.error_ok`:
 
-```
+```gleam
 // 'on' package
 
 pub fn error_ok(
@@ -32,7 +32,7 @@ pub fn error_ok(
 
 To be consumed like so:
 
-```
+```gleam
 // 'on' consumer
 
 use ok_payload <- on.error_ok(
@@ -40,7 +40,7 @@ use ok_payload <- on.error_ok(
   fn (e) { /* map e to desired return value here */ },
 )
 
-// keep working with 'ok_payload' down here
+// ...keep working with 'ok_payload' down here
 ```
 
 Following this pattern, 
@@ -48,7 +48,7 @@ Following this pattern,
 correspond to the happy path instead, by reversing
 the order of callbacks:
 
-```
+```gleam
 // 'on package
 
 pub fn ok_error(
@@ -69,13 +69,13 @@ use error_payload <- on.ok_error(
   fn (ok_payload) { /* map ok_payload to desired return value here */ },
 )
 
-// keep working with 'error_payload' down here
+// ...keep working with 'error_payload' down here
 ```
 
 The complete list of similar two-variant guards provided by the
 package is:
 
-```
+```gleam
 // Result
 on.error_ok
 on.ok_error
@@ -98,7 +98,7 @@ the package expects a value instead of a callback, as eager evaluation
 is considered default, as in the Gleam standard library. As in the standard
 library, apply the `lazy_` prefix to access lazy evaluation versions:
 
-```
+```gleam
 on.lazy_none_some           // (instead of on.none_some)
 on.lazy_true_false          // (instead of on.true_false)
 on.lazy_false_true          // (instead of on.false_true)
@@ -117,7 +117,7 @@ an `Option(b)`) should be used for the second (elided) variant.
 
 For example `on.some` only expects one callback to be provided:
 
-```
+```gleam
 pub fn some(
   option: Option(a),
   on_some f2: fn(a) -> Option(c),
@@ -131,7 +131,7 @@ pub fn some(
 
 To be used like so:
 
-```
+```gleam
 use x <- on.some(option_value)
 
 // work with payload x down here, in case option_value == Some(x);
@@ -140,7 +140,7 @@ use x <- on.some(option_value)
 
 Likewise, `on.ok` only expects a callback for the `Ok` payload:
 
-```
+```gleam
 pub fn ok(
   result: Result(a, b),
   on_ok f2: fn(a) -> Result(c, b),
@@ -154,18 +154,18 @@ pub fn ok(
 
 To be used like so:
 
-```
+```gleam
 use a <- on.ok(result_value)
 
 // work with payload x down here, in case result_value == Ok(a);
 // otherwise code has already returned Error(b)
 ```
 
-As such, `on.ok` is isomorphic to `result.try`.
+(Note that `on.ok` is isomorphic to `result.try`.)
 
 The list of all such 1-callback API functions is:
 
-```
+```gleam
 on.ok        // maps Error(b) to Error(b)
 on.error     // maps Ok(a) to Ok(a)
 on.some      // maps None to None
@@ -195,7 +195,7 @@ three-variant function have names of the form `on.a_b_c` where `a`,
 
 For example 'on' offers `on.empty_singleton_gt1`:
 
-```
+```gleam
 pub fn empty_singleton_gt1(
   list: List(a),
   on_empty c: c,
@@ -214,7 +214,7 @@ Altogether, such API calls exist such as to allow isolating each
 each of these three states of a list while early-processing the
 two others:
 
-```
+```gleam
 on.empty_singleton_gt1
 on.empty_gt1_singleton
 on.singleton_gt1_empty
