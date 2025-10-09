@@ -43,10 +43,27 @@ use ok_payload <- on.error_ok(
 // keep working with 'ok_payload' down here
 ```
 
-Following this pattern, `on.ok_error` allows the `Error()` value to
-become the happy path:
+Following this pattern, 
+`on.ok_error` allows the `Error` variant to
+correspond to the happy path instead, by reversing
+the order of callbacks:
 
 ```
+// 'on package
+
+pub fn ok_error(
+  result: Result(a, b),
+  on_ok f1: fn(a) -> c,
+  on_error f2: fn(b) -> c,
+) -> c {
+  case result {
+    Ok(a) -> f1(a)
+    Error(b) -> f2(b)
+  }
+}
+
+// 'on' consumer
+
 use error_payload <- on.ok_error(
   some_result,
   fn (ok_payload) { /* map ok_payload to desired return value here */ },
