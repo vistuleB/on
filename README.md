@@ -89,10 +89,10 @@ library as well, apply the `lazy_` prefix to access lazy
 evaluation versions:
 
 ```gleam
-on.lazy_none_some        // takes `on_none` callback instead of value
-on.lazy_true_false       // takes `on_true` callback instead of value
-on.lazy_false_true       // takes `on_false` callback instead of value
-on.lazy_empty_nonempty   // takes `on_empty` callback instead of value
+on.lazy_none_some        // takes callback instead of value for `on_none`
+on.lazy_true_false       // takes callback instead of value for `on_true`
+on.lazy_false_true       // takes callback instead of value for `on_false`
+on.lazy_empty_nonempty   // takes callback instead of value for `on_empty`
 ```
 
 ## One-variant shorthands
