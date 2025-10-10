@@ -277,11 +277,11 @@ import on.{Continue, Return}
 
 use b <- on.continue(
   case some_5_variant_thing() {
-    Variant1(v1) -> Return(some_function_from_v1_type_to_a_type(v1))
-    Variant2(v2) -> Return(some_function_from_v2_type_to_a_type(v2))
-    Variant3(v3) -> Return(some_function_from_v3_type_to_a_type(v3))
-    Variant4(v4) -> Continue(some_function_from_v3_type_to_b_type(v3))
-    Variant5(v5) -> Continue(some_function_from_v4_type_to_b_type(v4))
+    Variant1(v1) -> Return( /* construct value of type a from v1 */ )
+    Variant2(v2) -> Return( /* construct value of type a from v2 */ )
+    Variant3(v3) -> Return( /* construct value of type a from v3 */ )
+    Variant4(v4) -> Continue( /* construct value of type b from v4 */ )
+    Variant5(v5) -> Continue( /* construct value of type b from v5 */ )
   }
 )
 
