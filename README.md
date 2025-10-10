@@ -103,8 +103,8 @@ only one variant when the simple identity-like mapping (e.g. mapping
 an `Option(b)`) should be used for the second (elided) variant.
 
 For example, `on.some` only expects one callback—the second
-callback, that would have been `on_none: fn() -> ...`,
-default to mapping a `None: Option(a)` to a `None: Option(b)`:
+callback
+defaults to mapping a `None: Option(a)` to a `None: Option(b)`:
 
 ```gleam
 // 'on' package
