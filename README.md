@@ -231,11 +231,10 @@ use first, second, rest <- on.lazy_empty_singleton_gt1(
 // down here
 ```
 
-## Return/Continue type and `on.continue`
+## Generic Return/Continue mechanism
 
 The package also offers a one-size-fits-all guard named
-`on.continue` that consumes a value of type `Return(a, b)`
-defined by:
+`on.continue` that consumes a value of type `Return(a, b)`:
 
 ```gleam
 // 'on' package
