@@ -296,8 +296,7 @@ use b <- on.continue(
 ## See also
 
 The [given](https://github.com/inoas/gleam-given) package
-with a different variety of guards. (Does not include
-1-ary or 3-ary guards.)
+with a different variety of guards.
 
 ## Additional Examples
 
