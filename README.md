@@ -187,15 +187,7 @@ functions that take three callbacks for `List(a)` values,
 specifically to distinguish between the cases where a list
 has 0, 1, or greater than 1 values, with the 
 second and last being named as `singleton`, `gt1`
-respectively in function names.
-
-In comporting with the pattern followed by other 'on' API functions, such
-three-variant guards have names of the form `on.a_b_c` where `a`,
-`b`, `c` list the variants in the same order as the callbacks.
-
-The names of these functions are `empty_singleton_gt1`,
-`empty_gt1_singleton`, and `singleton_gt1_empty`, together with their `lazy_`
-varsions for the 0-ary `empty` variant:
+respectively in function names:
 
 ```gleam
 on.empty_singleton_gt1
@@ -206,7 +198,8 @@ on.lazy_empty_singleton_gt1
 on.lazy_empty_gt1_singleton
 ```
 
-For example, `on.lazy_empty_singleton_gt1` has the following implementation:
+For example, `on.lazy_empty_singleton_gt1` has the 
+following implementation and usage:
 
 ```gleam
 // 'on' package
@@ -224,8 +217,6 @@ pub fn lazy_empty_singleton_gt1(
   }
 }
 ```
-
-Sample usage would resemble:
 
 ```gleam
 // 'on' consumer
