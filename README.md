@@ -290,9 +290,6 @@ use b <- on.continue(
 // or Variant5
 ```
 
-(Note that the generic complexity of
-`on.continue` seems to rarely be required, in general.)
-
 ## See also
 
 The [given](https://github.com/inoas/gleam-given) package
