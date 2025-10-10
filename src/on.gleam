@@ -941,24 +941,23 @@ pub fn singleton_gt1_empty(
 // ****************
 
 /// A choice type whose semantics indicate intent to return from local
-/// scope or not. To be paired with 'on.not_return'.
+/// scope or not, to be paired with 'on.continue'.
 pub type Return(a, b) {
   Return(a)
-  NotReturn(b)
+  Continue(b)
 }
 
 /// Given a value of type Return(a, b) and a callback f(b) -> a, returns
-/// f(b1) if the value has the form 'NotReturn(b1)' and returns a1
-/// if the value has the form 'Return(a1)'.
+/// f(b1) if the value has the form Continue(b1) and returns a1
+/// if the value has the form Return(a1).
 /// 
 /// ### Example 1
 ///
 /// ```gleam
 /// let #(string1, string2) = #("bob", "")
-/// 
-/// use _ <- on.not_return(case string {
+/// use _ <- on.continue(case string {
 ///   "" -> Return(#(string1, string1))
-///   _ -> NotReturn(Nil)
+///   _ -> Continue(Nil)
 /// })
 /// // -> execution discontinues, scope returns #("bob", "bob")
 /// ```
@@ -967,21 +966,20 @@ pub type Return(a, b) {
 ///
 /// ```gleam
 /// let #(string1, string2) = #("bob", "alice")
-/// 
-/// use _ <- on.not_return(case string {
+/// use _ <- on.continue(case string {
 ///   "" -> Return(#(string1, string1))
-///   _ -> NotReturn(Nil)
+///   _ -> Continue(Nil)
 /// })
-/// // -> execution proceeds; the current scope must
-/// // return a #(String, String)
+/// // -> execution proceeds; the current scope must return a
+/// // #(String, String)
 /// ```
 ///
-pub fn not_return(
+pub fn continue(
   r: Return(a, b),
-  on_not_return f1: fn(b) -> a,
+  on_continue f1: fn(b) -> a,
 ) -> a {
   case r {
     Return(a) -> a
-    NotReturn(b) -> f1(b)
+    Continue(b) -> f1(b)
   }
 }

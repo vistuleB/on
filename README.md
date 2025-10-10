@@ -5,15 +5,17 @@
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
-Guards for the core gleam types to apply with the `<- use` syntax.
-
 ```sh
 gleam add on@1
 ```
 
+The ‘on’ package consists of a collection of guards that can be 
+paired with Gleam's `<- use` syntax. The package replicates some functions
+from the Gleam stdlib under a uniform naming scheme.
+
 ## Overview
 
-All ‘on’ API functions adhere to the same pattern exemplified by `on.error_ok`:
+All package functions adhere to the same pattern as:
 
 ```gleam
 // 'on' package
@@ -30,7 +32,7 @@ pub fn error_ok(
 }
 ```
 
-A package consumer would use `on.error_ok` like so:
+To be used as:
 
 ```gleam
 // 'on' consumer
@@ -43,25 +45,12 @@ use ok_payload <- on.error_ok(
 // ...keep working with 'ok_payload' down here
 ```
 
-Following the same pattern, 
+Symmetrically,
 `on.ok_error` allows the `Error` variant to
-correspond to the happy path instead, by reversing
-the order of callbacks:
+correspond to the happy path instead. Per the
+consumer:
 
 ```gleam
-// 'on package
-
-pub fn ok_error(
-  result: Result(a, b),
-  on_ok f1: fn(a) -> c,
-  on_error f2: fn(b) -> c,
-) -> c {
-  case result {
-    Ok(a) -> f1(a)
-    Error(b) -> f2(b)
-  }
-}
-
 // 'on' consumer
 
 use error_payload <- on.ok_error(
@@ -71,6 +60,8 @@ use error_payload <- on.ok_error(
 
 // ...keep working with 'error_payload' down here
 ```
+
+(Etc.)
 
 The complete list of similar two-variant guards provided by the
 package is:
@@ -93,16 +84,17 @@ on.empty_nonempty
 on.nonempty_empty
 ```
 
-However, note that for 0-ary variants
-the package expects a value instead of a callback, as eager evaluation
-is considered default, as in the Gleam standard library. As in the standard
-library, apply the `lazy_` prefix to access lazy evaluation versions:
+Note that 0-ary variants expect values
+instead of values by default, following the convention 
+of the Gleam stdlib. As in the standard
+library, apply the `lazy_` prefix to access lazy
+evaluation versions:
 
 ```gleam
-on.lazy_none_some           // (instead of on.none_some)
-on.lazy_true_false          // (instead of on.true_false)
-on.lazy_false_true          // (instead of on.false_true)
-on.lazy_empty_nonempty      // (instead of on.empty_nonempty)
+on.lazy_none_some
+on.lazy_true_false
+on.lazy_false_true
+on.lazy_empty_nonempty
 ```
 
 ## Skipping variants for which the identity callback should be used
@@ -161,15 +153,16 @@ To be used like so:
 ```gleam
 // 'on' consumer
 
-use a <- on.ok(result_value)
+use x <- on.ok(result_value)
 
-// work with payload x down here, in case result_value == Ok(a);
+// work with payload x down here, in case result_value == Ok(x);
 // otherwise code has already returned Error(b)
 ```
 
-(This is isomorphic to `result.try` from the standard library.)
+(Note that `on.ok` is isomorphic to `result.try` from the standard library.)
 
-The list of all such 1-callback API functions is:
+The list of all 1-callback API functions, excluding `on.contiue`
+discussed below, is:
 
 ```gleam
 on.ok        // maps Error(b) to Error(b)
@@ -248,13 +241,76 @@ use first, second, rest <- on.lazy_empty_singleton_gt1(
 // down here
 ```
 
+## Return/Continue type and `on.continue`
+
+The package also offers a one-size-fits-all guard named
+`on.continue` that consumes a value of type `Return(a, b)`
+which is itself defined within the package:
+
+```gleam
+// 'on' package
+
+pub type Return(a, b) {
+  Return(a)
+  Continue(b)
+}
+```
+
+Specifically, given a `Return(a, b)` value, `on.continue` will either
+return the `a`-payload if the value has the form `Return(a)`
+or else apply a given callback of the form `f(b) -> a` to the
+`b`-payload if the value has the form `Continue(b)`:
+
+```gleam
+// 'on' package
+
+pub fn continue(
+  r: Return(a, b),
+  on_continue f1: fn(b) -> a,
+) -> a {
+  case r {
+    Return(a) -> a
+    Continue(b) -> f1(b)
+  }
+}
+```
+
+This allows some many-valued variant to be sorted into
+`Return` and `Continue` buckets; the restriction being that
+all `Return` buckets contain the same type `a`, that all
+`Continue` buckets contain the same type `b`, and that
+code below the `on.continue` needs to resolve
+to a value of type `a`, as well:
+
+```
+// 'on' consumer
+
+use b <- on.continue(
+  case some_5_variant_thing() {
+    Variant1(v1) -> Return(some_function_from_v1_type_to_a_type(v1))
+    Variant2(v2) -> Return(some_function_from_v2_type_to_a_type(v2))
+    Variant3(v3) -> Return(some_function_from_v3_type_to_a_type(v3))
+    Variant4(v4) -> Continue(some_function_from_v3_type_to_b_type(v3))
+    Variant5(v5) -> Continue(some_function_from_v4_type_to_b_type(v4))
+  }
+)
+
+// ...down here code that evaluates to type 'a' with access to value
+// 'b', that will only execute if some_5_variant_thing() is Variant4
+// or Variant5
+```
+
+(Note cases where the generic complexity of
+`on.continue` is truly required/appropriate seem to be relatively 
+rare.)
+
 ## See also
 
 The [given](https://github.com/inoas/gleam-given) package,
 that uses a different naming convention. (Does not include
 1-ary or 3-ary callbacks.)
 
-## Examples
+## Additional Examples
 
 ```gleam
 import gleam/io

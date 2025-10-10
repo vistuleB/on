@@ -1,4 +1,4 @@
-import on
+import on.{Continue, Return}
 import gleeunit
 import gleam/string
 import gleam/option.{None, Some}
@@ -426,4 +426,20 @@ pub fn singleton_gt1_empty_test() {
     )
     "Empty"
   } == "Empty"
+}
+
+pub fn continue_test() {
+  assert {
+    use name <- on.continue(
+      Return("Max")
+    )
+    name <> name
+  } == "Max"
+
+  assert {
+    use name <- on.continue(
+      Continue("Max")
+    )
+    name <> name
+  } == "MaxMax"
 }
