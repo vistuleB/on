@@ -244,7 +244,7 @@ use first, second, rest <- on.lazy_empty_singleton_gt1(
 
 The package also offers a one-size-fits-all guard named
 `on.continue` that consumes a value of type `Return(a, b)`
-which is itself defined within the package:
+defined by:
 
 ```gleam
 // 'on' package
@@ -255,9 +255,9 @@ pub type Return(a, b) {
 }
 ```
 
-Specifically, given a `Return(a, b)` value, `on.continue` will either
-return the `a`-payload if the value has the form `Return(a)`
-or else apply a given callback of the form `f(b) -> a` to the
+Specifically, given a `Return(a, b)` value, `on.continue`
+returns the `a`-payload if the value has the form `Return(a)`
+or else applies a given callback of type `f(b) -> a` to the
 `b`-payload if the value has the form `Continue(b)`:
 
 ```gleam
@@ -265,11 +265,11 @@ or else apply a given callback of the form `f(b) -> a` to the
 
 pub fn continue(
   r: Return(a, b),
-  on_continue f1: fn(b) -> a,
+  on_continue f: fn(b) -> a,
 ) -> a {
   case r {
     Return(a) -> a
-    Continue(b) -> f1(b)
+    Continue(b) -> f(b)
   }
 }
 ```
@@ -281,8 +281,9 @@ all `Return` buckets contain the same type `a`, that all
 code below the `on.continue` needs to resolve
 to a value of type `a`, as well:
 
-```
+```gleam
 // 'on' consumer
+import on.{Continue, Return}
 
 use b <- on.continue(
   case some_5_variant_thing() {
@@ -294,14 +295,13 @@ use b <- on.continue(
   }
 )
 
-// ...down here code that evaluates to type 'a' with access to value
-// 'b', that will only execute if some_5_variant_thing() is Variant4
+// ...down here, code that evaluates to type a with access to value
+// b; this code only executes if some_5_variant_thing() is Variant4
 // or Variant5
 ```
 
-(Note cases where the generic complexity of
-`on.continue` is truly required/appropriate seem to be relatively 
-rare.)
+(Note that the generic complexity of
+`on.continue` seems to rarely be required, in general.)
 
 ## See also
 
