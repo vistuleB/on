@@ -32,22 +32,22 @@ pub fn error_ok(
 }
 ```
 
-To be used as:
+With corresponding usage:
 
 ```gleam
 // 'on' consumer
 
 use ok_payload <- on.error_ok(
   some_result,
-  fn (error_payload) { /* map error_payload to desired return value here */ },
+  on_error: fn (error_payload) { /* map error_payload to desired return value here */ },
 )
 
 // ...keep working with 'ok_payload' down here
 ```
 
-Symmetrically,
+Symmetrically, for example,
 `on.ok_error` allows the `Error` variant to
-correspond to the happy path instead. Per the
+correspond to the happy path instead; per the
 consumer:
 
 ```gleam
@@ -55,13 +55,11 @@ consumer:
 
 use error_payload <- on.ok_error(
   some_result,
-  fn (ok_payload) { /* map ok_payload to desired return value here */ },
+  on_ok: fn (ok_payload) { /* map ok_payload to desired return value here */ },
 )
 
 // ...keep working with 'error_payload' down here
 ```
-
-(Etc.)
 
 The complete list of similar two-variant guards provided by the
 package is:
@@ -87,33 +85,34 @@ on.nonempty_empty
 Note that 0-ary variants expect values
 instead of values by default, following the convention 
 of the Gleam stdlib. As in the standard
-library, apply the `lazy_` prefix to access lazy
+library as well, apply the `lazy_` prefix to access lazy
 evaluation versions:
 
 ```gleam
-on.lazy_none_some
-on.lazy_true_false
-on.lazy_false_true
-on.lazy_empty_nonempty
+on.lazy_none_some        // takes `on_none` callback instead of value
+on.lazy_true_false       // takes `on_true` callback instead of value
+on.lazy_false_true       // takes `on_false` callback instead of value
+on.lazy_empty_nonempty   // takes `on_empty` callback instead of value
 ```
 
-## Skipping variants for which the identity callback should be used
+## One-variant shorthands
 
-Specialized API functions whose names refer to
+Specialized API functions have names that refer to
 only one variant when the simple identity-like mapping (e.g. mapping
 `None` variant of an `Option(a)` to the `None` variant of
 an `Option(b)`) should be used for the second (elided) variant.
 
-For example, `on.some` only expects one callback—the second defaults
-to the identity(-like) mapping:
+For example, `on.some` only expects one callback—the second
+callback, that would have been `on_none: fn() -> ...`,
+default to mapping a `None: Option(a)` to a `None: Option(b)`:
 
 ```gleam
 // 'on' package
 
 pub fn some(
   option: Option(a),
-  on_some f2: fn(a) -> Option(c),
-) -> Option(c) {
+  on_some f2: fn(a) -> Option(b),
+) -> Option(b) {
   case option {
     None -> None
     Some(a) -> f2(a)
@@ -121,7 +120,7 @@ pub fn some(
 }
 ```
 
-To be used like so:
+E.g.:
 
 ```gleam
 // 'on' consumer
@@ -132,7 +131,7 @@ use x <- on.some(option_value)
 // otherwise code has already returned None
 ```
 
-Likewise, `on.ok` only expects a callback for the `Ok` payload:
+Similarly, `on.ok` only expects a callback for the `Ok` payload:
 
 ```gleam
 // 'on' package
@@ -148,7 +147,7 @@ pub fn ok(
 }
 ```
 
-To be used like so:
+E.g.:
 
 ```gleam
 // 'on' consumer
@@ -159,9 +158,9 @@ use x <- on.ok(result_value)
 // otherwise code has already returned Error(b)
 ```
 
-(Note that `on.ok` is isomorphic to `result.try` from the standard library.)
+(One can note that `on.ok` is isomorphic to `result.try` from the standard library.)
 
-The list of all 1-callback API functions, excluding `on.contiue`
+Etc. The list of all 1-callback API functions, excluding `on.continue`
 discussed below, is:
 
 ```gleam
