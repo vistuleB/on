@@ -305,9 +305,9 @@ use b <- on.continue(
 
 ## See also
 
-The [given](https://github.com/inoas/gleam-given) package,
-that uses a different naming convention. (Does not include
-1-ary or 3-ary callbacks.)
+The [given](https://github.com/inoas/gleam-given) package
+with a different variety of guards. (Does not include
+1-ary or 3-ary guards.)
 
 ## Additional Examples
 
@@ -330,7 +330,7 @@ pub fn main() -> Nil {
 
   use <- on.lazy_false_true(
     string.trim(first) == "<!DOCTYPE html>",
-    on_false: fn() { io.println("expecting DOCTYPE in first line") },
+    on_false: fn() { io.println("expecting vanilla DOCTYPE in first line") },
   )
 
   use parse_tree <- on.error_ok(
