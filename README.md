@@ -433,7 +433,19 @@ on.empty_singleton_gt1        --                         --
 on.empty_gt1_singleton        --                         --
 on.singleton_gt1_empty        --                         --
 
-// (various eager_ versions of 3-callback guards omitted)
+// 3-callback guards mized eager/lazy:
+
+on.eager_empty_singleton_gt1  --                         --
+on.empty_eager_singleton_gt1  --                         --
+on.eager_empty_gt1_singleton  --                         --
+on.empty_eager_gt1_singleton  --                         --
+on.eager_singleton_gt1_empty  --                         --
+on.singleton_eager_gt1_empty  --                         --
+
+// 3-callback guards fully eager: 
+on.eager_empty_eager_singleton_gt1     --                --
+on.eager_empty_eager_gt1_singleton     --                --
+on.eager_singleton_eager_gt1_empty     --                --
 ```
 
 ## Additional Examples
