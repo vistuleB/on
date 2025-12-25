@@ -119,7 +119,6 @@ on.eager_empty_nonempty   // takes a value instead of a 0-ary callback for `on_e
 
 For example:
 
-
 ```gleam
 // 'on' consumer
 
@@ -152,13 +151,12 @@ pub fn eager_error_ok(
 }
 ```
 
-For example:
+Of usage:
 
 ```gleam
 // 'on' consumer
 
-let res = get_some_result()
-use ok_payload <- on.eager_error_ok(res, None)
+use ok_payload <- on.eager_error_ok(some_result, None)
 
 // ...keep working with 'ok_payload' down here,
 // while the Error case has been escaped with a None return value
