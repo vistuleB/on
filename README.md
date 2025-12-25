@@ -16,25 +16,9 @@ from the Gleam stdlib under a uniform naming scheme.
 ## Breaking Changes in V2.0.0
 
 V2.0.0 switches to lazy-by-default escape values. The `lazy_` prefix is no longer a thing, while
-the `eager_` prefix becomes a thing. For example as in this fragment of code:
+the `eager_` prefix becomes a thing.
 
-```gleam
-type CSSUnit {
-  PX
-  REM
-  EM
-}
-
-fn extract_css_unit(s: String) -> #(String, Option(CSSUnit)) {
-  use <- on.eager_true_false(
-    string.ends_with(s, "rem"),
-    on_true: #(string.drop_end(s, 3), Some(REM)),
-  )
-```
-
-(See full fragment below.)
-
-Another breaking change in V2.0.0 is that `type Return(a, b) { Return(a) Continue(b) }` has been
+The second breaking change in V2.0.0 is that `type Return(a, b) { Return(a) Continue(b) }` has been
 replaced by `type Return(a, b) { Return(a) Select(b) }`, with `on.continue` correspondingly
 reanemd to `on.select`. This change was made because `Select` has the same number of characters as `Return`
 and because the author had an irrational aesthetics-based prejudice against the `Continue`
