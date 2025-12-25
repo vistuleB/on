@@ -19,8 +19,8 @@ V2.0.0 switches to lazy-by-default escape values. The `lazy_` prefix is no longe
 the `eager_` prefix becomes a thing.
 
 The second breaking change in V2.0.0 is that `type Return(a, b) { Return(a) Continue(b) }` has been
-replaced by `type Return(a, b) { Return(a) Select(b) }`, with `on.continue` correspondingly
-reanemd to `on.select`. This change was made because `Select` has the same number of characters as `Return`
+replaced by `type Return(a, b) { Return(a) Select(b) }`, with `on.continue`
+renamed to `on.select`. This change was made because `Select` has the same number of characters as `Return`
 and because the author had an irrational aesthetics-based prejudice against the `Continue`
 variant name.
 
