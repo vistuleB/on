@@ -24,7 +24,7 @@ renamed to `on.select`. This change was made because `Select` has the same numbe
 and because the author had an irrational aesthetics-based prejudice against the `Continue`
 variant name.
 
-## Package Overview
+## API Overview
 
 All package functions adhere to the same pattern as:
 
