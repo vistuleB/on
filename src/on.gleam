@@ -70,6 +70,42 @@ pub fn error(
 // * Result/2 *
 // ************
 
+/// Given a Result(a, b), a value of type c and a callback f(a) -> c,
+/// returns the value of type c if the Result is an Error(_), else the
+/// evaluation of the second callback at a1 if the Result is Ok(a1).
+///
+/// ### Example 1
+/// 
+/// ```gleam
+/// use ok_payload <- on.eager_error_ok(
+///   Ok(3),
+///   on_error: option.None
+/// )
+/// // -> execution proceeds, ok_payload == 3; the scope must return
+/// // an Option(a) value to match the on_error return value
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use ok_payload <- on.eager_error_ok(
+///   Error("Joe"),
+///   on_error: option.None
+/// )
+/// // -> execution discontinues, scope returns option.None
+/// ```
+///
+pub fn eager_error_ok(
+  result: Result(a, b),
+  on_error c,
+  on_ok f2: fn(a) -> c,
+) -> c {
+  case result {
+    Error(_) -> c
+    Ok(a) -> f2(a)
+  }
+}
+
 /// Given a Result(a, b) and callbacks f(b) -> c, f(a) -> c 
 /// returns the evaluation of the first callback at b1 if the
 /// Result is Error(b1) and the evaluation of the second callback
@@ -104,6 +140,42 @@ pub fn error_ok(
   case result {
     Error(b) -> f1(b)
     Ok(a) -> f2(a)
+  }
+}
+
+/// Given a Result(a, b), a value of type c and a callback f(b) -> c,
+/// returns the value of type c if the Result is an Ok(_), else the
+/// evaluation of the second callback at b1 if the Result is Error(b1).
+///
+/// ### Example 1
+///
+/// ```gleam
+/// use error_payload <- on.eager_ok_error(
+///   Ok(3),
+///   on_ok: 7,
+/// )
+/// // -> execution discontinues, scope returns 7
+/// ```
+///
+/// ### Example 2
+/// 
+/// ```gleam
+/// use error_payload <- on.eager_ok_error(
+///   Error("Joe"),
+///   on_ok: 7,
+/// )
+/// // -> execution proceeds, error_payload == "Joe"; the scope
+/// // must return an Int to match the on_ok return value
+/// ```
+///
+pub fn eager_ok_error(
+  result: Result(a, b),
+  on_ok c: c,
+  on_error f2: fn(b) -> c,
+) -> c {
+  case result {
+    Ok(_) -> c
+    Error(b) -> f2(b)
   }
 }
 
@@ -152,7 +224,7 @@ pub fn ok_error(
 /// Given a Bool returns False if the bool is False, else
 /// returns a lazily evaluated callback.
 ///
-/// Equivalent to on.false_true(_, False, _).
+/// Equivalent to on.eager_false_true(_, False, _).
 ///
 /// ### Example 1
 ///
@@ -216,7 +288,7 @@ pub fn false(
 /// ### Example 1
 ///
 /// ```gleam
-/// use <- on.false_true(
+/// use <- on.eager_false_true(
 ///   True,
 ///   on_false: "Joe",
 /// )
@@ -227,14 +299,14 @@ pub fn false(
 /// ### Example 2
 ///
 /// ```gleam
-/// use <- on.false_true(
+/// use <- on.eager_false_true(
 ///   False,
 ///   on_false: "Joe",
 /// )
 /// // -> execution discontinues, scope returns "Joe"
 /// ```
 ///
-pub fn false_true(
+pub fn eager_false_true(
   bool: Bool,
   on_false c: c,
   on_true f2: fn() -> c,
@@ -252,7 +324,7 @@ pub fn false_true(
 /// ### Example 1
 ///
 /// ```gleam
-/// use <- on.lazy_false_true(
+/// use <- on.false_true(
 ///   True,
 ///   on_false: fn() { "Joe" },
 /// )
@@ -263,14 +335,14 @@ pub fn false_true(
 /// ### Example 2
 ///
 /// ```gleam
-/// use <- on.lazy_false_true(
+/// use <- on.false_true(
 ///   False,
 ///   on_false: fn() { "Joe" },
 /// )
 /// // -> execution discontinues, scope returns "Joe"
 /// ```
 ///
-pub fn lazy_false_true(
+pub fn false_true(
   bool: Bool,
   on_false f1: fn() -> c,
   on_true f2: fn() -> c,
@@ -288,7 +360,7 @@ pub fn lazy_false_true(
 /// ### Example 1
 ///
 /// ```gleam
-/// use <- on.true_false(
+/// use <- on.eager_true_false(
 ///   True,
 ///   on_true: "Joe",
 /// )
@@ -298,7 +370,7 @@ pub fn lazy_false_true(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use <- on.true_false(
+/// use <- on.eager_true_false(
 ///   False,
 ///   on_true: "Joe",
 /// )
@@ -306,7 +378,7 @@ pub fn lazy_false_true(
 /// // match the return value of the on_true argument
 /// ```
 ///
-pub fn true_false(
+pub fn eager_true_false(
   bool: Bool,
   on_true c: c,
   on_false f2: fn() -> c,
@@ -325,7 +397,7 @@ pub fn true_false(
 /// ### Example 1
 ///
 /// ```gleam
-/// use <- on.lazy_true_false(
+/// use <- on.true_false(
 ///   True,
 ///   on_true: fn() { "Joe" },
 /// )
@@ -335,7 +407,7 @@ pub fn true_false(
 /// ### Example 2
 ///
 /// ```gleam
-/// use <- on.lazy_true_false(
+/// use <- on.true_false(
 ///   False,
 ///   on_true: fn() { "Joe" },
 /// )
@@ -343,7 +415,7 @@ pub fn true_false(
 /// // match the return value of the on_false argument
 /// ```
 ///
-pub fn lazy_true_false(
+pub fn true_false(
   bool: Bool,
   on_true f1: fn() -> c,
   on_false f2: fn() -> c,
@@ -363,7 +435,7 @@ pub fn lazy_true_false(
 /// else returns None.
 ///
 /// Equivalent to:
-/// - on.none_some(_, None, _).
+/// - on.eager_none_some(_, None, _).
 /// - option.then
 /// 
 /// ### Example 1
@@ -430,7 +502,7 @@ pub fn none(
 /// ## Examples
 ///
 /// ```gleam
-/// use payload <- on.none_some(
+/// use payload <- on.eager_none_some(
 ///   Some(3),
 ///   on_none: "Bob",
 /// )
@@ -439,14 +511,14 @@ pub fn none(
 /// ```
 ///
 /// ```gleam
-/// use payload <- on.none_some(
+/// use payload <- on.eager_none_some(
 ///   None,
 ///   on_none: "Bob",
 /// )
 /// // -> execution discontinues, scope returns "Bob"
 /// ```
 ///
-pub fn none_some(
+pub fn eager_none_some(
   option: Option(a),
   on_none c: c,
   on_some f2: fn(a) -> c,
@@ -465,7 +537,7 @@ pub fn none_some(
 /// ### Example 1
 ///
 /// ```gleam
-/// use payload <- on.lazy_none_some(
+/// use payload <- on.none_some(
 ///   Some(3),
 ///   on_none: fn() { "Bob" },
 /// )
@@ -477,14 +549,14 @@ pub fn none_some(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use payload <- on.lazy_none_some(
+/// use payload <- on.none_some(
 ///   None,
 ///   on_none: fn() { "Bob" },
 /// )
 /// // -> execution discontinues, scope returns "Bob"
 /// ```
 ///
-pub fn lazy_none_some(
+pub fn none_some(
   option: Option(a),
   on_none f1: fn() -> c,
   on_some f2: fn(a) -> c,
@@ -492,6 +564,43 @@ pub fn lazy_none_some(
   case option {
     None -> f1()
     Some(a) -> f2(a)
+  }
+}
+
+/// Given an Option(a), a value of type c and a callback
+/// f() -> c, returns the value if the Option is Some(x),
+/// else evaluates the second callback if the option is
+/// None.
+///
+/// ### Example 1
+///
+/// ```gleam
+/// use <- on.eager_some_none(
+///   Some(3),
+///   on_some: "q",
+/// )
+/// // -> execution discontinues, scope returns "q"
+/// ```
+///
+/// ### Example 2
+///
+/// ```gleam
+/// use <- on.eager_some_none(
+///   None,
+///   on_some: "q",
+/// )
+/// // -> execution proceeds, the scope must return a String to match
+/// // the on_some return value
+/// ```
+///
+pub fn eager_some_none(
+  option: Option(a),
+  on_some c: c,
+  on_none f2: fn() -> c,
+) -> c {
+  case option {
+    Some(_) -> c
+    None -> f2()
   }
 }
 
@@ -607,7 +716,7 @@ pub fn empty(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first, rest <- on.empty_nonempty(
+/// use first, rest <- on.eager_empty_nonempty(
 ///   [1, 4, 7],
 ///   on_empty: "Joe",
 /// )
@@ -619,14 +728,14 @@ pub fn empty(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, rest <- on.empty_nonempty(
+/// use first, rest <- on.eager_empty_nonempty(
 ///   [],
 ///   on_empty: "Joe",
 /// )
 /// // -> execution discontinues, scope returns "Joe"
 /// ```
 /// 
-pub fn empty_nonempty(
+pub fn eager_empty_nonempty(
   list: List(a),
   on_empty c: c,
   on_nonempty f2: fn(a, List(a)) -> c,
@@ -645,7 +754,7 @@ pub fn empty_nonempty(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first, rest <- on.lazy_empty_nonempty(
+/// use first, rest <- on.empty_nonempty(
 ///   [1, 4, 7],
 ///   on_empty: fn() { "Joe" },
 /// )
@@ -657,14 +766,14 @@ pub fn empty_nonempty(
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, rest <- on.lazy_empty_nonempty(
+/// use first, rest <- on.empty_nonempty(
 ///   [],
 ///   on_empty: fn() { "Joe" },
 /// )
 /// // -> execution discontinues, scope returns "Joe"
 /// ```
 /// 
-pub fn lazy_empty_nonempty(
+pub fn empty_nonempty(
   list: List(a),
   on_empty f1: fn() -> c,
   on_nonempty f2: fn(a, List(a)) -> c,
@@ -672,6 +781,43 @@ pub fn lazy_empty_nonempty(
   case list {
     [] -> f1()
     [first, ..rest] -> f2(first, rest)
+  }
+}
+
+/// Given a List(a), a value of type c, and
+/// a callback f() -> c, returns either the value of type
+/// c if the list is nonempty, and otherwise evaluates the
+/// second callback, if the list is empty. 
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use <- on.eager_nonempty_empty(
+///   [1, 4, 7],
+///   "z",
+/// )
+/// // -> execution discontinues, scope returns "z"
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use <- on.eager_nonempty_empty(
+///   [],
+///   "z",
+/// )
+/// // -> execution proceeds, the scope must return a
+/// // String to match the eager nonempty return value
+/// ```
+/// 
+pub fn eager_nonempty_empty(
+  list: List(a),
+  on_nonempty c: c,
+  on_empty f2: fn() -> c,
+) -> c {
+  case list {
+    [_, ..] -> c
+    [] -> f2()
   }
 }
 
@@ -718,12 +864,141 @@ pub fn nonempty_empty(
 // * List/3 *
 // **********
 
+/// Given a List(a), two values c1 and c2of type c, and a callback
+/// f(a, a, List(a)) -> c, returns:
+///
+/// - the c1 if the list is empty
+/// - the c2 if the list has one element
+/// - the callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.eager_empty_eager_singleton_gt1(
+///   [1, 4, 7],
+///   on_empty: 0,
+///   on_singleton: 300,
+/// )
+/// // -> execution proceeds, first == 1, second == 4, rest == [7];
+/// // scope must return an Int to match the on_empty, on_singleton callbacks
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.eager_empty_eager_singleton_gt1(
+///   [4],
+///   on_empty: 0,
+///   on_singleton: 300,
+/// )
+/// // -> execution discontinues, scope resturns 300
+/// ```
+/// 
+pub fn eager_empty_eager_singleton_gt1(
+  list: List(a),
+  on_empty c1: c,
+  on_singleton c2: c,
+  on_gt1 f3: fn(a, a, List(a)) -> c,
+) -> c {
+  case list {
+    [] -> c1
+    [_] -> c2
+    [first, second, ..rest] -> f3(first, second, rest)
+  }
+}
+
 /// Given a List(a), a value of type c, and callbacks
 /// f(a) -> c, f(a, a, List(a)) -> c, returns:
 ///
 /// - the value of type c if the list is empty
 /// - the first callback evaluated with argument a1 if the list as the form [a1]
 /// - the second callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.eager_empty_singleton_gt1(
+///   [1, 4, 7],
+///   on_empty: 0,
+///   on_singleton: fn(first) { first },
+/// )
+/// // -> execution proceeds, first == 1, second == 4, rest == [7];
+/// // scope must return an Int to match the on_empty, on_singleton callbacks
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.eager_empty_singleton_gt1(
+///   [4],
+///   on_empty: 0,
+///   on_singleton: fn(first) { first },
+/// )
+/// // -> execution discontinues, scope resturns 4
+/// ```
+/// 
+pub fn eager_empty_singleton_gt1(
+  list: List(a),
+  on_empty c: c,
+  on_singleton f2: fn(a) -> c,
+  on_gt1 f3: fn(a, a, List(a)) -> c,
+) -> c {
+  case list {
+    [] -> c
+    [first] -> f2(first)
+    [first, second, ..rest] -> f3(first, second, rest)
+  }
+}
+
+/// Given a List(a), a value c1 of type c and a callback
+/// f(a, a, List(a)) -> c, returns:
+///
+/// - the evaluation of the first callback if the list is empty
+/// - c1 if the list has one element
+/// - the third callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.empty_eager_singleton_gt1(
+///   [1, 4, 7],
+///   on_empty: fn() { 200 },
+///   on_singleton: 300,
+/// )
+/// // -> execution proceeds, first == 1, second == 4, rest == [7];
+/// // scope must return an Int to match the on_empty, on_singleton callbacks
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first, second, ..rest <- on.empty_singleton_gt1(
+///   [4],
+///   on_empty: fn() { 200 },
+///   on_singleton: 300,
+/// )
+/// // -> execution discontinues, scope resturns 300
+/// ```
+/// 
+pub fn empty_eager_singleton_gt1(
+  list: List(a),
+  on_empty f1: fn() -> c,
+  on_singleton c: c,
+  on_gt1 f3: fn(a, a, List(a)) -> c,
+) -> c {
+  case list {
+    [] -> f1()
+    [_] -> c
+    [first, second, ..rest] -> f3(first, second, rest)
+  }
+}
+
+/// Given a List(a), and callbacks f() -> c, f(a) -> c,
+/// f(a, a, List(a)) -> c, returns:
+///
+/// - the evaluation of the first callback if the list is empty
+/// - the second callback evaluated with argument a1 if the list as the form [a1]
+/// - the third callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
 /// 
 /// ### Example 1
 /// 
@@ -750,49 +1025,6 @@ pub fn nonempty_empty(
 /// 
 pub fn empty_singleton_gt1(
   list: List(a),
-  on_empty c: c,
-  on_singleton f2: fn(a) -> c,
-  on_gt1 f3: fn(a, a, List(a)) -> c,
-) -> c {
-  case list {
-    [] -> c
-    [first] -> f2(first)
-    [first, second, ..rest] -> f3(first, second, rest)
-  }
-}
-
-/// Given a List(a), and callbacks f() -> c, f(a) -> c,
-/// f(a, a, List(a)) -> c, returns:
-///
-/// - the evaluation of the first callback if the list is empty
-/// - the second callback evaluated with argument a1 if the list as the form [a1]
-/// - the third callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
-/// 
-/// ### Example 1
-/// 
-/// ```gleam
-/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
-///   [1, 4, 7],
-///   on_empty: 0,
-///   on_singleton: fn(first) { first },
-/// )
-/// // -> execution proceeds, first == 1, second == 4, rest == [7];
-/// // scope must return an Int to match the on_empty, on_singleton callbacks
-/// ```
-/// 
-/// ### Example 2
-/// 
-/// ```gleam
-/// use first, second, ..rest <- on.lazy_empty_singleton_gt1(
-///   [4],
-///   on_empty: 0,
-///   on_singleton: fn(first) { first },
-/// )
-/// // -> execution discontinues, scope resturns 4
-/// ```
-/// 
-pub fn lazy_empty_singleton_gt1(
-  list: List(a),
   on_empty f1: fn() -> c,
   on_singleton f2: fn(a) -> c,
   on_gt1 f3: fn(a, a, List(a)) -> c,
@@ -801,6 +1033,50 @@ pub fn lazy_empty_singleton_gt1(
     [] -> f1()
     [first] -> f2(first)
     [first, second, ..rest] -> f3(first, second, rest)
+  }
+}
+
+/// Given a List(a), values c1 and c2 of type c, and a callback
+/// f(a) -> c, returns:
+///
+/// - c1 if the list is empty
+/// - c2 if the list as more than one element
+/// - the second callback evaluated with argument a1 if the list as the form [a1]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first <- on.eager_empty_eager_gt1_singleton(
+///   [1, 4, 7],
+///   on_empty: Error("empty list"),
+///   on_gt1: Error("> 1 element in list"),
+/// )
+/// // -> execution discontinues, scope returns Error("> 1 element in list")
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first <- on.eager_empty_eager_gt1_singleton(
+///   [4],
+///   on_empty: Error("empty list"),
+///   on_gt1: Error("> 1 element in list"),
+/// )
+/// // -> execution proceeds, first == 4;
+/// // scope must return a Result(c, String) to match the on_empty 
+/// // and on_gt1 values
+/// ```
+/// 
+pub fn eager_empty_eager_gt1_singleton(
+  list: List(a),
+  on_empty c1: c,
+  on_gt1 c2: c,
+  on_singleton f3: fn(a) -> c,
+) -> c {
+  case list {
+    [] -> c1
+    [_, _, ..] -> c2
+    [first] -> f3(first)
   }
 }
 
@@ -814,28 +1090,27 @@ pub fn lazy_empty_singleton_gt1(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first <- on.empty_gt1_singleton(
+/// use first <- on.eager_empty_gt1_singleton(
 ///   [1, 4, 7],
 ///   on_empty: Error("empty list"),
-///   on_gt1: Error("> 1 element in list"),
+///   on_gt1: fn(_, _, rest) { Error(string.inspect(2 + list.length(rest) <> " > 1 elements in list") },
 /// )
-/// // -> execution discontinues, scope returns Error("> 1 element in list")
+/// // -> execution discontinues, scope returns Error("3 > 1 elements in list")
 /// ```
 /// 
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first <- on.empty_gt1_singleton(
+/// use first <- on.eager_empty_gt1_singleton(
 ///   [4],
 ///   on_empty: Error("empty list"),
-///   on_gt1: Error("> 1 element in list"),
+///   on_gt1: fn(_, _, rest) { Error(string.inspect(2 + list.length(rest) <> " > 1 elements in list") },
 /// )
-/// // -> execution proceeds, first == 4;
-/// // scope must return a Result(c, String) to match the on_empty 
-/// // and on_gt1 callbacks
+/// // -> execution discontinues, first == 4
+/// // scope must return a Result(c, String)
 /// ```
 /// 
-pub fn empty_gt1_singleton(
+pub fn eager_empty_gt1_singleton(
   list: List(a),
   on_empty c: c,
   on_gt1 f2: fn(a, a, List(a)) -> c,
@@ -844,6 +1119,49 @@ pub fn empty_gt1_singleton(
   case list {
     [] -> c
     [first, second, ..rest] -> f2(first, second, rest)
+    [first] -> f3(first)
+  }
+}
+
+/// Given a List(a), a callback f() -> c, a value c1 of type c
+/// and a second callback f(a, a, List(a)) -> c, f(a) -> c, returns:
+///
+/// - the evaluation of the first callback if the list is empty
+/// - c1 if the list has more than one element
+/// - the third callback evaluated with argument a1 if the list as the form [a1]
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use first <- on.empty_eager_gt1_singleton(
+///   [1, 4, 7],
+///   on_empty: fn() { Error("empty list") },
+///   on_gt1: Error("> 1 elements in list"),
+/// )
+/// // -> execution discontinues, scope returns Error("> 1 elements in list")
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use first <- on.empty_gt1_singleton(
+///   [4],
+///   on_empty: fn() { Error("empty list") },
+///   on_gt1: Error("> 1 elements in list"),
+/// )
+/// // -> execution proceeds, first == 4;
+/// // scope must return a Result(c, String)
+/// ```
+/// 
+pub fn empty_eager_gt1_singleton(
+  list: List(a),
+  on_empty f1: fn() -> c,
+  on_gt1 c: c,
+  on_singleton f3: fn(a) -> c,
+) -> c {
+  case list {
+    [] -> f1()
+    [_, _, ..] -> c
     [first] -> f3(first)
   }
 }
@@ -858,28 +1176,28 @@ pub fn empty_gt1_singleton(
 /// ### Example 1
 /// 
 /// ```gleam
-/// use first <- on.lazy_empty_gt1_singleton(
+/// use first <- on.empty_gt1_singleton(
 ///   [1, 4, 7],
-///   on_empty: Error("empty list"),
-///   on_gt1: fn(_, _, _) {Error("> 1 element in list")},
+///   on_empty: fn() { Error("empty list") },
+///   on_gt1: fn(_, _, rest) {Error(string.inspect(2 + list.length(rest)) <> " > 1 elements in list")},
 /// )
-/// // -> execution discontinues, scope returns Error("> 1 element in list")
+/// // -> execution discontinues, scope returns Error("3 > 1 elements in list")
 /// ```
 /// 
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first <- on.lazy_empty_gt1_singleton(
+/// use first <- on.empty_gt1_singleton(
 ///   [4],
-///   on_empty: Error("empty list"),
-///   on_gt1: Error("> 1 element in list"),
+///   on_empty: fn() { Error("empty list") },
+///   on_gt1: fn(_, _, rest) {Error(string.inspect(2 + list.length(rest)) <> " > 1 elements in list")},
 /// )
 /// // -> execution proceeds, first == 4;
 /// // scope must return a Result(c, String) to match the on_empty 
 /// // and on_gt1 callbacks
 /// ```
 /// 
-pub fn lazy_empty_gt1_singleton(
+pub fn empty_gt1_singleton(
   list: List(a),
   on_empty f1: fn() -> c,
   on_gt1 f2: fn(a, a, List(a)) -> c,
@@ -889,6 +1207,136 @@ pub fn lazy_empty_gt1_singleton(
     [] -> f1()
     [first, second, ..rest] -> f2(first, second, rest)
     [first] -> f3(first)
+  }
+}
+
+/// Given a List(a), values c1, c2 of type c and a callback
+/// f() -> c, returns:
+///
+/// - c1 if the list has one element
+/// - c2 if the list has more than one element
+/// - the evaluation of the third callback if the list is empty
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use <- on.eager_singleton_eager_gt1_empty(
+///   [1, 4, 7],
+///   on_singleton: 55,
+///   on_gt1: 66,
+/// )
+/// // -> execution discontinues, scope returns 66
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use <- on.eager_singleton_eager_gt1_empty(
+///   [],
+///   on_singleton: 55,
+///   on_gt1: 66,
+/// )
+/// // -> execution proceeds, scope must return an Int to 
+/// // match the on_singleton, on_gt1 callbacks
+/// 
+/// ```
+/// 
+pub fn eager_singleton_eager_gt1_empty(
+  list: List(a),
+  on_singleton c1: c,
+  on_gt1 c2: c,
+  on_empty f3: fn() -> c,
+) -> c {
+  case list {
+    [_] -> c1
+    [_, _, ..] -> c2
+    [] -> f3()
+  }
+}
+
+/// Given a List(a), a value of type c and callbacks fn(a, a, List(a)) -> c,
+/// fn() -> c, returns:
+///
+/// - the value of type c if the list has one elemnt
+/// - the second callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// - the evaluation of the third callback if the list is empty
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use <- on.eager_singleton_gt1_empty(
+///   [4],
+///   on_singleton: 23,
+///   on_gt1: fn(first, second, ..rest) { first + second},
+/// )
+/// // -> execution discontinues, scope returns 23
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use <- on.eager_singleton_gt1_empty(
+///   [],
+///   on_singleton: 23,
+///   on_gt1: fn(first, second, ..rest) { first + second},
+/// )
+/// // -> execution proceeds, scope must return an Int
+/// 
+/// ```
+/// 
+pub fn eager_singleton_gt1_empty(
+  list: List(a),
+  on_singleton c: c,
+  on_gt1 f2: fn(a, a, List(a)) -> c,
+  on_empty f3: fn() -> c,
+) -> c {
+  case list {
+    [_] -> c
+    [first, second, ..rest] -> f2(first, second, rest)
+    [] -> f3()
+  }
+}
+
+/// Given a List(a) and a callback f(a) -> c,
+/// f(a, a, List(a)) -> c, f() -> c, returns:
+///
+/// - the first callback evaluated with argument a1 if the list as the form [a1]
+/// - the second callback evaluated with arguments a1, a2, rest if the list has the form [a1, a2, ..rest]
+/// - the evaluation of the third callback if the list is empty
+/// 
+/// ### Example 1
+/// 
+/// ```gleam
+/// use <- on.singleton_eager_gt1_empty(
+///   [2, 4, 7],
+///   on_singleton: fn(x) { x + 1 },
+///   on_gt1: 66,
+/// )
+/// // -> execution discontinues, scope returns 66
+/// ```
+/// 
+/// ### Example 2
+/// 
+/// ```gleam
+/// use <- on.singleton_eager_gt1_empty(
+///   [],
+///   on_singleton: fn(x) { x + 1 },
+///   on_gt1: 66,
+/// )
+/// // -> execution proceeds, scope must return an Int
+/// 
+/// ```
+/// 
+pub fn singleton_eager_gt1_empty(
+  list: List(a),
+  on_singleton f1: fn(a) -> c,
+  on_gt1 c: c,
+  on_empty f3: fn() -> c,
+) -> c {
+  case list {
+    [first] -> f1(first)
+    [_, _, ..] -> c
+    [] -> f3()
   }
 }
 
@@ -903,17 +1351,17 @@ pub fn lazy_empty_gt1_singleton(
 /// 
 /// ```gleam
 /// use <- on.singleton_gt1_empty(
-///   [1, 4, 7],
+///   [2, 4, 7],
 ///   on_singleton: fn(x) { x + 1 },
 ///   on_gt1: fn(first, second, ..rest) { first + second},
 /// )
-/// // -> execution discontinues, scope returns 5 (= 1 + 4)
+/// // -> execution discontinues, scope returns 6 (= 2 + 4)
 /// ```
 /// 
 /// ### Example 2
 /// 
 /// ```gleam
-/// use first, second, ..rest <- on.singleton_gt1_empty(
+/// use <- on.singleton_gt1_empty(
 ///   [],
 ///   on_singleton: fn(x) { x + 1 },
 ///   on_gt1: fn(first, second, ..rest) { first + second},
@@ -941,23 +1389,23 @@ pub fn singleton_gt1_empty(
 // ****************
 
 /// A choice type whose semantics indicate intent to return from local
-/// scope or not, to be paired with 'on.continue'.
+/// scope or not, to be paired with 'on.select'.
 pub type Return(a, b) {
   Return(a)
-  Continue(b)
+  Select(b)
 }
 
 /// Given a value of type Return(a, b) and a callback f(b) -> a, returns
-/// f(b1) if the value has the form Continue(b1) and returns a1
+/// f(b1) if the value has the form Select(b1) and returns a1
 /// if the value has the form Return(a1).
 /// 
 /// ### Example 1
 ///
 /// ```gleam
 /// let #(string1, string2) = #("bob", "")
-/// use _ <- on.continue(case string {
+/// use _ <- on.select(case string {
 ///   "" -> Return(#(string1, string1))
-///   _ -> Continue(Nil)
+///   _ -> Select(Nil)
 /// })
 /// // -> execution discontinues, scope returns #("bob", "bob")
 /// ```
@@ -966,20 +1414,20 @@ pub type Return(a, b) {
 ///
 /// ```gleam
 /// let #(string1, string2) = #("bob", "alice")
-/// use _ <- on.continue(case string {
+/// use _ <- on.select(case string {
 ///   "" -> Return(#(string1, string1))
-///   _ -> Continue(Nil)
+///   _ -> Select(Nil)
 /// })
 /// // -> execution proceeds; the current scope must return a
 /// // #(String, String)
 /// ```
 ///
-pub fn continue(
+pub fn select(
   r: Return(a, b),
-  on_continue f1: fn(b) -> a,
+  on_select f: fn(b) -> a,
 ) -> a {
   case r {
     Return(a) -> a
-    Continue(b) -> f1(b)
+    Select(b) -> f(b)
   }
 }

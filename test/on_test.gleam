@@ -1,4 +1,4 @@
-import on.{Continue, Return}
+import on.{Select, Return}
 import gleeunit
 import gleam/string
 import gleam/option.{None, Some}
@@ -10,6 +10,24 @@ pub fn main() -> Nil {
 //**********
 //* Result *
 //**********
+
+pub fn eager_error_ok_test() {
+  assert {
+    use ok_payload <- on.eager_error_ok(
+      Error(Nil),
+      "Bob",
+    )
+    ok_payload + 1 |> string.inspect
+  } == "Bob"
+
+  assert {
+    use ok_payload <- on.eager_error_ok(
+      Ok(3),
+      "Bob",
+    )
+    ok_payload + 1 |> string.inspect
+  } == "4"
+}
 
 pub fn error_ok_test() {
   assert {
@@ -27,6 +45,24 @@ pub fn error_ok_test() {
     )
     ok_payload + 1 |> string.inspect
   } == "4"
+}
+
+pub fn eager_ok_error_test() {
+  assert {
+    use error_payload <- on.eager_ok_error(
+      Error("Max"),
+      "r",
+    )
+    error_payload <> error_payload
+  } == "MaxMax"
+
+  assert {
+    use error_payload <- on.eager_ok_error(
+      Ok(3),
+      "r",
+    )
+    error_payload <> error_payload
+  } == "r"
 }
 
 pub fn ok_error_test() {
@@ -51,11 +87,29 @@ pub fn ok_error_test() {
 //* Bool *
 //********
 
+pub fn eager_false_true_test() {
+  assert {
+    use <- on.eager_false_true(
+      False,
+      "Max",
+    )
+    "Sue"
+  } == "Max"
+
+  assert {
+    use <- on.eager_false_true(
+      True,
+      "Max",
+    )
+    "Sue"
+  } == "Sue"
+}
+
 pub fn false_true_test() {
   assert {
     use <- on.false_true(
       False,
-      "Max",
+      fn() { "Max" },
     )
     "Sue"
   } == "Max"
@@ -63,33 +117,15 @@ pub fn false_true_test() {
   assert {
     use <- on.false_true(
       True,
-      "Max",
-    )
-    "Sue"
-  } == "Sue"
-}
-
-pub fn lazy_false_true_test() {
-  assert {
-    use <- on.lazy_false_true(
-      False,
-      fn() { "Max" },
-    )
-    "Sue"
-  } == "Max"
-
-  assert {
-    use <- on.lazy_false_true(
-      True,
       fn() { "Max" },
     )
     "Sue"
   } == "Sue"
 }
 
-pub fn true_false_test() {
+pub fn eager_true_false_test() {
   assert {
-    use <- on.true_false(
+    use <- on.eager_true_false(
       False,
       on_true: "Max",
     )
@@ -97,7 +133,7 @@ pub fn true_false_test() {
   } == "Sue"
 
   assert {
-    use <- on.true_false(
+    use <- on.eager_true_false(
       True,
       on_true: "Max",
     )
@@ -107,7 +143,7 @@ pub fn true_false_test() {
 
 pub fn lazy_true_false_test() {
   assert {
-    use <- on.lazy_true_false(
+    use <- on.true_false(
       False,
       fn() { "Max" },
     )
@@ -115,7 +151,7 @@ pub fn lazy_true_false_test() {
   } == "Sue"
 
   assert {
-    use <- on.lazy_true_false(
+    use <- on.true_false(
       True,
       fn() { "Max" },
     )
@@ -171,9 +207,9 @@ pub fn false_test() {
 //* Option *
 //**********
 
-pub fn none_some_test() {
+pub fn eager_none_some_test() {
   assert {
-    use some_payload <- on.none_some(
+    use some_payload <- on.eager_none_some(
       None,
       "Sue",
     )
@@ -181,7 +217,7 @@ pub fn none_some_test() {
   } == "Sue"
 
   assert {
-    use some_payload <- on.none_some(
+    use some_payload <- on.eager_none_some(
       Some("Max"),
       "Sue",
     )
@@ -189,9 +225,9 @@ pub fn none_some_test() {
   } == "MaxMax"
 }
 
-pub fn lazy_none_some_test() {
+pub fn none_some_test() {
   assert {
-    use some_payload <- on.lazy_none_some(
+    use some_payload <- on.none_some(
       None,
       fn(){ "Sue" },
     )
@@ -199,12 +235,30 @@ pub fn lazy_none_some_test() {
   } == "Sue"
 
   assert {
-    use some_payload <- on.lazy_none_some(
+    use some_payload <- on.none_some(
       Some("Max"),
       fn(){ "Sue" },
     )
     some_payload <> some_payload 
   } == "MaxMax"
+}
+
+pub fn eager_some_none_test() {
+  assert {
+    use <- on.eager_some_none(
+      None,
+      "z",
+    )
+    "Max"
+  } == "Max"
+
+  assert {
+    use <- on.eager_some_none(
+      Some("Sue"),
+      "z",
+    )
+    "Max"
+  } == "z"
 }
 
 pub fn some_none_test() {
@@ -225,13 +279,49 @@ pub fn some_none_test() {
   } == "SueSue"
 }
 
-//********
-//* List *
-//********
+//**********
+//* List/1 *
+//**********
 
-pub fn empty_nonempty_test() {
+pub fn empty_test() {
   assert {
-    use first, _rest <- on.empty_nonempty(
+    use <- on.empty(
+      ["bob", "jake"]
+    )
+    ["suzan"]
+  } == ["bob", "jake"]
+
+  assert {
+    use <- on.empty(
+      []
+    )
+    ["suzan"]
+  } == ["suzan"]
+}
+
+pub fn nonempty_test() {
+  assert {
+    use first, _rest <- on.nonempty(
+      ["bob", "jake"]
+    )
+    [first <> first]
+  } == ["bobbob"]
+
+  assert {
+    use first, _rest <- on.nonempty(
+      []
+    )
+    [first <> first]
+  } == []
+}
+
+//**********
+//* List/2 *
+//**********
+
+pub fn eager_empty_nonempty_test() {
+  assert {
+    use first, _rest <- on.eager_empty_nonempty(
       [],
       "Sue",
     )
@@ -239,7 +329,7 @@ pub fn empty_nonempty_test() {
   } == "Sue"
 
   assert {
-    use first, _rest <- on.empty_nonempty(
+    use first, _rest <- on.eager_empty_nonempty(
       ["Max"],
       "Sue",
     )
@@ -247,9 +337,9 @@ pub fn empty_nonempty_test() {
   } == "MaxMax"
 }
 
-pub fn lazy_empty_nonempty_test() {
+pub fn empty_nonempty_test() {
   assert {
-    use first, _rest <- on.lazy_empty_nonempty(
+    use first, _rest <- on.empty_nonempty(
       [],
       fn(){ "Sue" },
     )
@@ -257,12 +347,30 @@ pub fn lazy_empty_nonempty_test() {
   } == "Sue"
 
   assert {
-    use first, _rest <- on.lazy_empty_nonempty(
+    use first, _rest <- on.empty_nonempty(
       ["Max"],
       fn(){ "Sue" },
     )
     first <> first
   } == "MaxMax"
+}
+
+pub fn eager_nonempty_empty_test() {
+  assert {
+    use <- on.eager_nonempty_empty(
+      [],
+      "z",
+    )
+    "Sue"
+  } == "Sue"
+
+  assert {
+    use <- on.eager_nonempty_empty(
+      ["Max"],
+      "z",
+    )
+    "Sue"
+  } == "z"
 }
 
 pub fn nonempty_empty_test() {
@@ -283,9 +391,42 @@ pub fn nonempty_empty_test() {
   } == "MaxMax"
 }
 
-pub fn empty_singleton_gt1_test() {
+//**********
+//* List/3 *
+//**********
+
+pub fn eager_empty_eager_singleton_gt1_test() {
   assert {
-    use first, second, _rest <- on.empty_singleton_gt1(
+    use first, second, _rest <- on.eager_empty_eager_singleton_gt1(
+      ["Sue", "Max"],
+      "Empty",
+      "Singleton",
+    )
+    first <> second
+  } == "SueMax"
+
+  assert {
+    use first, second, _rest <- on.eager_empty_eager_singleton_gt1(
+      ["Sue"],
+      "Empty",
+      "Singleton",
+    )
+    first <> second
+  } == "Singleton"
+
+  assert {
+    use first, second, _rest <- on.eager_empty_eager_singleton_gt1(
+      [],
+      "Empty",
+      "Singleton",
+    )
+    first <> second
+  } == "Empty"
+}
+
+pub fn eager_empty_singleton_gt1_test() {
+  assert {
+    use first, second, _rest <- on.eager_empty_singleton_gt1(
       ["Sue", "Max"],
       "Empty",
       fn(f) -> String { f <> f},
@@ -294,16 +435,16 @@ pub fn empty_singleton_gt1_test() {
   } == "SueMax"
 
   assert {
-    use first, second, _rest <- on.empty_singleton_gt1(
+    use first, second, _rest <- on.eager_empty_singleton_gt1(
       ["Sue"],
       "Empty",
-      fn(f) -> String { f <> f},
+      fn(f) -> String { f <> f <> f},
     )
     first <> second
-  } == "SueSue"
+  } == "SueSueSue"
 
   assert {
-    use first, second, _rest <- on.empty_singleton_gt1(
+    use first, second, _rest <- on.eager_empty_singleton_gt1(
       [],
       "Empty",
       fn(f) -> String { f <> f},
@@ -312,9 +453,38 @@ pub fn empty_singleton_gt1_test() {
   } == "Empty"
 }
 
-pub fn lazy_empty_singleton_gt1_test() {
+pub fn empty_eager_singleton_gt1_test() {
   assert {
-    use first, second, _rest <- on.lazy_empty_singleton_gt1(
+    use first, second, _rest <- on.empty_eager_singleton_gt1(
+      ["Sue", "Max"],
+      fn() { "Empty" },
+      "z",
+    )
+    first <> second
+  } == "SueMax"
+
+  assert {
+    use first, second, _rest <- on.empty_eager_singleton_gt1(
+      ["Sue"],
+      fn() { "Empty" },
+      "z",
+    )
+    first <> second
+  } == "z"
+
+  assert {
+    use first, second, _rest <- on.empty_eager_singleton_gt1(
+      [],
+      fn() { "Empty" },
+      "z",
+    )
+    first <> second
+  } == "Empty"
+}
+
+pub fn empty_singleton_gt1_test() {
+  assert {
+    use first, second, _rest <- on.empty_singleton_gt1(
       ["Sue", "Max"],
       fn() { "Empty" },
       fn(f) -> String { f <> f},
@@ -323,7 +493,7 @@ pub fn lazy_empty_singleton_gt1_test() {
   } == "SueMax"
 
   assert {
-    use first, second, _rest <- on.lazy_empty_singleton_gt1(
+    use first, second, _rest <- on.empty_singleton_gt1(
       ["Sue"],
       fn() { "Empty" },
       fn(f) -> String { f <> f},
@@ -332,20 +502,105 @@ pub fn lazy_empty_singleton_gt1_test() {
   } == "SueSue"
 
   assert {
-    use first, second, _rest <- on.lazy_empty_singleton_gt1(
+    use first, second, _rest <- on.empty_singleton_gt1(
       [],
       fn() { "Empty" },
       fn(f) -> String { f <> f},
     )
     first <> second
   } == "Empty"
+}
+
+pub fn eager_empty_eager_gt1_singleton_test() {
+  assert {
+    use first <- on.eager_empty_eager_gt1_singleton(
+      [1, 4, 7],
+      on_empty: Error("empty list"),
+      on_gt1: Error("> 1 element in list"),
+    )
+    Ok(first + first)
+  } == Error("> 1 element in list")
+  assert {
+    use first <- on.eager_empty_eager_gt1_singleton(
+      [4],
+      on_empty: Error("empty list"),
+      on_gt1: Error("> 1 element in list"),
+    )
+    Ok(first + first)
+  } == Ok(8)
+  assert {
+    use first <- on.eager_empty_eager_gt1_singleton(
+      [],
+      on_empty: Error("empty list"),
+      on_gt1: Error("> 1 element in list"),
+    )
+    Ok(first + first)
+  } == Error("empty list")
+}
+
+pub fn eager_empty_gt1_singleton_test() {
+  assert {
+    use first <- on.eager_empty_gt1_singleton(
+      ["Sue", "Max"],
+      "Empty",
+      fn(f, s, _rest) -> String { f <> s},
+    )
+    first <> first
+  } == "SueMax"
+
+  assert {
+    use first <- on.eager_empty_gt1_singleton(
+      ["Sue"],
+      "Empty",
+      fn(f, s, _rest) -> String { f <> s},
+    )
+    first <> first
+  } == "SueSue"
+
+  assert {
+    use first <- on.eager_empty_gt1_singleton(
+      [],
+      "Empty",
+      fn(f, s, _rest) -> String { f <> s},
+    )
+    first <> first
+  } == "Empty"
+}
+
+pub fn empty_eager_gt1_singleton_test() {
+  assert {
+    use first <- on.empty_eager_gt1_singleton(
+      [1, 4, 7],
+      on_empty: fn() { Error("empty list") },
+      on_gt1: Error("> 1 elements in list"),
+    )
+    Ok(first + first)
+  } == Error("> 1 elements in list")
+
+  assert {
+    use first <- on.empty_eager_gt1_singleton(
+      [4],
+      on_empty: fn() { Error("empty list") },
+      on_gt1: Error("> 1 elements in list"),
+    )
+    Ok(first + first)
+  } == Ok(8)
+
+  assert {
+    use first <- on.empty_eager_gt1_singleton(
+      [],
+      on_empty: fn() { Error("empty list") },
+      on_gt1: Error("> 1 elements in list"),
+    )
+    Ok(first + first)
+  } == Error("empty list")
 }
 
 pub fn empty_gt1_singleton_test() {
   assert {
     use first <- on.empty_gt1_singleton(
       ["Sue", "Max"],
-      "Empty",
+      fn(){ "Empty" },
       fn(f, s, _rest) -> String { f <> s},
     )
     first <> first
@@ -354,7 +609,7 @@ pub fn empty_gt1_singleton_test() {
   assert {
     use first <- on.empty_gt1_singleton(
       ["Sue"],
-      "Empty",
+      fn(){ "Empty" },
       fn(f, s, _rest) -> String { f <> s},
     )
     first <> first
@@ -363,39 +618,97 @@ pub fn empty_gt1_singleton_test() {
   assert {
     use first <- on.empty_gt1_singleton(
       [],
-      "Empty",
+      fn(){ "Empty" },
       fn(f, s, _rest) -> String { f <> s},
     )
     first <> first
   } == "Empty"
 }
 
-pub fn lazy_empty_gt1_singleton_test() {
+pub fn eager_singleton_eager_gt1_empty_test() {
   assert {
-    use first <- on.lazy_empty_gt1_singleton(
-      ["Sue", "Max"],
-      fn(){ "Empty" },
-      fn(f, s, _rest) -> String { f <> s},
+    use <- on.eager_singleton_eager_gt1_empty(
+      [1, 4, 7],
+      on_singleton: 55,
+      on_gt1: 66,
     )
-    first <> first
-  } == "SueMax"
+    0
+  } == 66
 
   assert {
-    use first <- on.lazy_empty_gt1_singleton(
-      ["Sue"],
-      fn(){ "Empty" },
-      fn(f, s, _rest) -> String { f <> s},
+    use <- on.eager_singleton_eager_gt1_empty(
+      [4],
+      on_singleton: 55,
+      on_gt1: 66,
     )
-    first <> first
+    0
+  } == 55
+
+  assert {
+    use <- on.eager_singleton_eager_gt1_empty(
+      [],
+      on_singleton: 55,
+      on_gt1: 66,
+    )
+    0
+  } == 0
+}
+
+pub fn eager_singleton_gt1_empty_test() {
+  assert {
+    use <- on.eager_singleton_gt1_empty(
+      [1, 4, 7],
+      on_singleton: 55,
+      on_gt1: fn(first, second, _) { first + second },
+    )
+    0
+  } == 5
+
+  assert {
+    use <- on.eager_singleton_gt1_empty(
+      [4],
+      on_singleton: 55,
+      on_gt1: fn(first, second, _) { first + second },
+    )
+    0
+  } == 55
+
+  assert {
+    use <- on.eager_singleton_gt1_empty(
+      [],
+      on_singleton: 55,
+      on_gt1: fn(first, second, _) { first + second },
+    )
+    0
+  } == 0
+}
+
+pub fn singleton_eager_gt1_empty_test() {
+  assert {
+    use <- on.singleton_eager_gt1_empty(
+      ["Sue", "Max"],
+      fn(f) { f <> f},
+      "Bob",
+    )
+    "Empty"
+  } == "Bob"
+
+  assert {
+    use <- on.singleton_eager_gt1_empty(
+      ["Sue"],
+      fn(f) { f <> f},
+      "Bob",
+    )
+    "Empty"
   } == "SueSue"
 
   assert {
-    use first <- on.lazy_empty_gt1_singleton(
+    use <- on.singleton_eager_gt1_empty(
       [],
-      fn(){ "Empty" },
-      fn(f, s, _rest) -> String { f <> s},
+      fn(f) { f <> f},
+      "Bob",
     )
-    first <> first
+    "Empty"
   } == "Empty"
 }
 
@@ -428,17 +741,17 @@ pub fn singleton_gt1_empty_test() {
   } == "Empty"
 }
 
-pub fn continue_test() {
+pub fn select_test() {
   assert {
-    use name <- on.continue(
+    use name <- on.select(
       Return("Max")
     )
     name <> name
   } == "Max"
 
   assert {
-    use name <- on.continue(
-      Continue("Max")
+    use name <- on.select(
+      Select("Max")
     )
     name <> name
   } == "MaxMax"

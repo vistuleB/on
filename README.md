@@ -6,14 +6,42 @@
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
 ```sh
-gleam add on@1
+gleam add on@2 // lazy evaluation by default, `eager_` modifier for eager evaluation
+gleam add on@1 // eager evaluation by default, `lazy_` modifier for lazy evaluation
 ```
 
 The ‘on’ package consists of a collection of guards that can be 
 paired with Gleam's `<- use` syntax. The package replicates some functions
 from the Gleam stdlib under a uniform naming scheme.
 
-## Overview
+## Breaking changes in v2.0.0: Lazy evaluation by default; `Return/Continue` renamed to `Return/Select`
+
+V2.0.0 switches to lazy-by-default escape values. The `lazy_` prefix is no longer a thing, while
+the `eager_` prefix becomes a thing. For example as in this fragment of code:
+
+```gleam
+type CSSUnit {
+  PX
+  REM
+  EM
+}
+
+fn extract_css_unit(s: String) -> #(String, Option(CSSUnit)) {
+  use <- on.eager_true_false(
+    string.ends_with(s, "rem"),
+    on_true: #(string.drop_end(s, 3), Some(REM)),
+  )
+```
+
+(See full fragment below.)
+
+The second major change in V2.0.0 is that `type Return(a, b) { Return(a) Continue(b) }` has been
+replaced by `type Return(a, b) { Return(a) Select(b) }`, with `on.continue` correspondingly
+reanemd to `on.select`. This change was made because `Select` has the same number of characters as `Return`
+and because the author had an irrational aesthetics-based prejudice against the `Continue`
+variant name.
+
+## Package Overview
 
 All package functions adhere to the same pattern as:
 
@@ -82,20 +110,46 @@ on.empty_nonempty
 on.nonempty_empty
 ```
 
-Note that 0-ary variants expect values
-instead of values by default, following the convention 
-of the Gleam stdlib. As in the standard
-library as well, apply the `lazy_` prefix to access lazy
-evaluation versions:
+## Using `eager_`
+
+Values can be provided instead of callbacks by using the `eager_` prefix.
+For example:
 
 ```gleam
-on.lazy_none_some        // takes 0-ary callback instead of value for `on_none`
-on.lazy_true_false       // takes 0-ary callback instead of value for `on_true`
-on.lazy_false_true       // takes 0-ary callback instead of value for `on_false`
-on.lazy_empty_nonempty   // takes 0-ary callback instead of value for `on_empty`
+on.eager_none_some        // takes a value instead of a 0-ary callback for `on_none`
+on.eager_true_false       // takes a value instead of a 0-ary callback for `on_true`
+on.eager_false_true       // takes a value instead of a 0-ary callback for `on_false`
+on.eager_empty_nonempty   // takes a value instead of a 0-ary callback for `on_empty`
 ```
 
-## One-variant shorthands
+This convention also extends to callbacks that are not 0-ary, for completeness.
+For example `on` contains `eager_error_ok`:
+
+```gleam
+pub fn eager_error_ok(
+  result: Result(a, b),
+  on_error c,
+  on_ok f2: fn(a) -> c,
+) -> c {
+  case result {
+    Error(_) -> c
+    Ok(a) -> f2(a)
+  }
+}
+```
+
+A possible usage would be:
+
+```gleam
+let res = get_some_result()
+use ok_payload <- on.eager_error_ok(res, None)
+
+// ...keep working with 'ok_payload' down here,
+// while the Error case has been escaped with None
+// (and this scope must return an Option(a), to match the None)
+```
+
+## Single-variant shorthands
 
 Specialized API functions have names that refer to
 only one variant when the simple identity-like mapping (e.g. mapping
@@ -160,7 +214,7 @@ use x <- on.ok(result_value)
 
 (One can note that `on.ok` is isomorphic to `result.try` from the standard library.)
 
-Etc. The list of all 1-callback API functions, excluding `on.continue`
+Etc. The list of all 1-callback API functions, excluding `on.select`
 discussed below, is:
 
 ```gleam
@@ -231,57 +285,57 @@ use first, second, rest <- on.lazy_empty_singleton_gt1(
 // down here
 ```
 
-## Generic Return/Continue mechanism
+## Generic Return/Select (previously 'Return/Continue') mechanism
 
 The package also offers a one-size-fits-all guard named
-`on.continue` that consumes a value of type `Return(a, b)`:
+`on.select` that consumes a value of type `Return(a, b)`, defined as:
 
 ```gleam
 // 'on' package
 
 pub type Return(a, b) {
   Return(a)
-  Continue(b)
+  Select(b)
 }
 ```
 
-Specifically, given a `Return(a, b)` value, `on.continue`
+Specifically, given a `Return(a, b)` value, `on.select`
 returns the `a`-payload if the value has the form `Return(a)`
 or else applies a given callback of type `f(b) -> a` to the
-`b`-payload if the value has the form `Continue(b)`:
+`b`-payload if the value has the form `Select(b)`:
 
 ```gleam
 // 'on' package
 
-pub fn continue(
+pub fn select(
   r: Return(a, b),
-  on_continue f: fn(b) -> a,
+  on_select f: fn(b) -> a,
 ) -> a {
   case r {
     Return(a) -> a
-    Continue(b) -> f(b)
+    Select(b) -> f(b)
   }
 }
 ```
 
 This allows some many-valued variant to be sorted into
-`Return` and `Continue` buckets; the restriction being that
-all `Return` buckets contain the same type `a`, that all
-`Continue` buckets contain the same type `b`, and that
-code below the `on.continue` needs to resolve
+`Return` and `Select` buckets; the restriction being that
+all `Return` buckets contain a payload of same type `a`, that all
+`Select` buckets contain a payload of same type `b`, and that
+the code below the `on.select` resolves
 to a value of type `a`, as well:
 
 ```gleam
 // 'on' consumer
-import on.{Continue, Return}
+import on.{Select, Return}
 
-use b <- on.continue(
+use b <- on.select(
   case some_5_variant_thing() {
-    Variant1(v1) -> Return( /* construct value of type a from v1 */ )
-    Variant2(v2) -> Return( /* construct value of type a from v2 */ )
-    Variant3(v3) -> Return( /* construct value of type a from v3 */ )
-    Variant4(v4) -> Continue( /* construct value of type b from v4 */ )
-    Variant5(v5) -> Continue( /* construct value of type b from v5 */ )
+    Variant1(v1) -> Return( /* construct value of type a from v1 here */ )
+    Variant2(v2) -> Return( /* construct value of type a from v2 here */ )
+    Variant3(v3) -> Return( /* construct value of type a from v3 here */ )
+    Variant4(v4) -> Select( /* construct value of type b from v4 here */ )
+    Variant5(v5) -> Select( /* construct value of type b from v5 here */ )
   }
 )
 
@@ -293,7 +347,70 @@ use b <- on.continue(
 ## See also
 
 The [given](https://github.com/inoas/gleam-given) package
-with a different variety of guards.
+with a simpler variety of guards. (But that may lead to less
+overengineering and overthinking.)
+
+## Table: Comparison with stdlib guards and [given](https://github.com/inoas/gleam-given)
+
+```
+on                            stdlib                     given
+=============================================================================
+// 1-callback guards:
+
+on.ok                         result.try                 --
+on.error                      result.try_recover         --
+on.some                       option.then                --
+on.none                       --                         --
+on.true                       --                         --
+on.false                      --                         --
+on.empty                      --                         --
+on.nonempty                   --                         --
+on.select                     --                         --
+
+// 2-callback guards lazy versions:
+
+on.error_ok                   --                         given.ok
+on.ok_error                   --                         given.error
+on.none_some                  --                         given.some
+on.some_none                  --                         given.none
+on.true_false                 bool.lazy_guard            given.that
+on.false_true                 --                         given.not
+on.empty_nonempty             --                         given.non_empty
+on.nonempty_empty             --                         given.empty
+--                            --                         given.any       // (for List(Bool) value)
+--                            --                         given.all       // (for List(Bool) value)
+--                            --                         given.any_not   // (for List(Bool) value)
+--                            --                         given.all_not   // (for List(Bool) value)
+--                            --                         given.when      // (for fn() -> Bool value)
+--                            --                         given.when_not  // (for fn() -> Bool value)
+--                            --                         given.any_ok    // (for List(Result) value)
+--                            --                         given.all_ok    // (for List(Result) value)
+--                            --                         given.any_error // (for List(Result) value)
+--                            --                         given.all_error // (for List(Result) value)
+--                            --                         given.any_some  // (for List(Option) value)
+--                            --                         given.all_some  // (for List(Option) value)
+--                            --                         given.any_none  // (for List(Option) value)
+--                            --                         given.all_none  // (for List(Option) value)
+
+// 2-callback guards eager versions:
+
+on.eager_error_ok             --                         --
+on.eager_ok_error             --                         --
+on.eager_none_some            --                         --
+on.eager_some_none            --                         --
+on.eager_true_false           bool.guard                 --
+on.eager_false_true           --                         --
+on.eager_empty_nonempty       --                         --
+on.eager_nonempty_empty       --                         --
+
+// 3-callback guards lazy versions:
+
+on.empty_singleton_gt1        --                         --
+on.empty_gt1_singleton        --                         --
+on.singleton_gt1_empty        --                         --
+
+// (various eager_ versions of 3-callback guards omitted)
+```
 
 ## Additional Examples
 
@@ -309,12 +426,12 @@ pub fn main() -> Nil {
     on_error: fn(e) { io.println("simplifile.read error: " <> string.inspect(e)) }
   )
 
-  use first, rest <- on.lazy_empty_nonempty(
+  use first, rest <- on.empty_nonempty(
     string.split(contents, "\n"),
     on_empty: fn() { io.println("empty contents") },
   )
 
-  use <- on.lazy_false_true(
+  use <- on.false_true(
     string.trim(first) == "<!DOCTYPE html>",
     on_false: fn() { io.println("expecting vanilla DOCTYPE in first line") },
   )
@@ -342,17 +459,17 @@ type CSSUnit {
 }
 
 fn extract_css_unit(s: String) -> #(String, Option(CSSUnit)) {
-  use <- on.true_false(
+  use <- on.eager_true_false(
     string.ends_with(s, "rem"),
     on_true: #(string.drop_end(s, 3), Some(REM)),
   )
 
-  use <- on.true_false(
+  use <- on.eager_true_false(
     string.ends_with(s, "em"),
     on_true: #(string.drop_end(s, 2), Some(EM)),
   )
 
-  use <- on.true_false(
+  use <- on.eager_true_false(
     string.ends_with(s, "px"),
     on_true: #(string.drop_end(s, 2), Some(PX)),
   )
