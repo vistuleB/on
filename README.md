@@ -276,13 +276,13 @@ on.singleton_eager_gt1_empty
 on.eager_singleton_eager_gt1_empty
 ```
 
-For example, `on.lazy_empty_singleton_gt1` has the 
+For example, `on.empty_singleton_gt1` has the 
 following implementation and usage:
 
 ```gleam
 // 'on' package
 
-pub fn lazy_empty_singleton_gt1(
+pub fn empty_singleton_gt1(
   list: List(a),
   on_empty f1: fn() -> c,
   on_singleton f2: fn(a) -> c,
@@ -299,7 +299,7 @@ pub fn lazy_empty_singleton_gt1(
 ```gleam
 // 'on' consumer
 
-use first, second, rest <- on.lazy_empty_singleton_gt1(
+use first, second, rest <- on.empty_singleton_gt1(
   some_list : List(a),
   fn() { /* ... */ },
   fn(some_element: a) { /* ... */ },
