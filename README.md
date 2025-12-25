@@ -72,8 +72,8 @@ use error_payload <- on.ok_error(
 // ...keep working with 'error_payload' down here
 ```
 
-The complete list of similar two-variant guards provided by the
-package is:
+The package contains similar two-variant guards for `Bool`, `Option`
+and `List`:
 
 ```gleam
 // Result
@@ -93,7 +93,19 @@ on.empty_nonempty
 on.nonempty_empty
 ```
 
-## Using `eager_`
+E.g., usage of `empty_nonempty`:
+
+```gleam
+// 'on' consumer
+
+use first, rest <- on.empty_nonempty(
+  some_list(),   // type List(a)
+  on_empty: fn() { /* create return value for empty case here */ }
+)
+
+// ...work down here with first: a and rest: List(a), in the
+// case where the list is nonempty
+```
 
 Values can be provided instead of callbacks by using the `eager_` prefix.
 For example:
@@ -105,10 +117,29 @@ on.eager_false_true       // takes a value instead of a 0-ary callback for `on_f
 on.eager_empty_nonempty   // takes a value instead of a 0-ary callback for `on_empty`
 ```
 
-This convention also extends to callbacks that are not 0-ary, for completeness.
-For example `on` contains `eager_error_ok`:
+For example:
+
 
 ```gleam
+// 'on' consumer
+
+use first, rest <- on.eager_empty_nonempty(
+  some_list(),   // type List(a)
+  on_empty: Error("empty list")
+)
+
+// ...work down here with first: a and rest: List(a), in the
+// case where the list is nonempty; we must return a Result(b, String)
+// to match the `on_empty` return value
+```
+
+The API also offers `eager_` variants (no pun intended) for variants that payloads, as well, i.e.,
+to replace callbacks that would take an argument with a precomputed value.
+For example `on.eager_error_ok`:
+
+```gleam
+// 'on' package
+
 pub fn eager_error_ok(
   result: Result(a, b),
   on_error c,
@@ -121,14 +152,16 @@ pub fn eager_error_ok(
 }
 ```
 
-A possible usage would be:
+For example:
 
 ```gleam
+// 'on' consumer
+
 let res = get_some_result()
 use ok_payload <- on.eager_error_ok(res, None)
 
 // ...keep working with 'ok_payload' down here,
-// while the Error case has been escaped with None
+// while the Error case has been escaped with a None return value
 // (and this scope must return an Option(a), to match the None)
 ```
 
