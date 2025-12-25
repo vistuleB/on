@@ -108,7 +108,7 @@ use first, rest <- on.empty_nonempty(
 ```
 
 Values can be provided instead of callbacks by using the `eager_` prefix.
-For example:
+Specifically, the call names are:
 
 ```gleam
 on.eager_none_some        // takes a value instead of a 0-ary callback for `on_none`
