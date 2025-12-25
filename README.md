@@ -442,10 +442,11 @@ on.empty_eager_gt1_singleton  --                         --
 on.eager_singleton_gt1_empty  --                         --
 on.singleton_eager_gt1_empty  --                         --
 
-// 3-callback guards fully eager: 
-on.eager_empty_eager_singleton_gt1     --                --
-on.eager_empty_eager_gt1_singleton     --                --
-on.eager_singleton_eager_gt1_empty     --                --
+// 3-callback guards doubly eager:
+
+on.eager_empty_eager_singleton_gt1        --             --
+on.eager_empty_eager_gt1_singleton        --             --
+on.eager_singleton_eager_gt1_empty        --             --
 ```
 
 ## Additional Examples
