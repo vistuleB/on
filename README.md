@@ -5,16 +5,15 @@
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
-```sh
-gleam add on@2 // lazy evaluation by default, `eager_` modifier for eager evaluation
-gleam add on@1 // eager evaluation by default, `lazy_` modifier for lazy evaluation
+```
+gleam add on@2
 ```
 
 The ‘on’ package consists of a collection of guards that can be 
 paired with Gleam's `<- use` syntax. The package replicates some functions
 from the Gleam stdlib under a uniform naming scheme.
 
-## Breaking changes in v2.0.0: Lazy evaluation by default; `Return/Continue` renamed to `Return/Select`
+## Breaking changes in v2.0.0: Lazy evaluation by default; `Return/Continue`  -> `Return/Select`
 
 V2.0.0 switches to lazy-by-default escape values. The `lazy_` prefix is no longer a thing, while
 the `eager_` prefix becomes a thing. For example as in this fragment of code:
