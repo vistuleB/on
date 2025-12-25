@@ -255,15 +255,25 @@ functions that take three callbacks for `List(a)` values,
 specifically to distinguish between the cases where a list
 has 0, 1, or greater than 1 values, with the 
 second and last being named as `singleton`, `gt1`
-respectively in function names:
+respectively in function names. Including all of the
+`eager_` variants this API consists of:
 
 ```gleam
 on.empty_singleton_gt1
 on.empty_gt1_singleton
 on.singleton_gt1_empty
 
-on.lazy_empty_singleton_gt1
-on.lazy_empty_gt1_singleton
+on.eager_empty_singleton_gt1
+on.empty_eager_singleton_gt1
+on.eager_empty_eager_singleton_gt1
+
+on.eager_empty_gt1_singleton
+on.empty_eager_gt1_singleton
+on.eager_empty_eager_gt1_singleton
+
+on.eager_singleton_gt1_empty
+on.singleton_eager_gt1_empty
+on.eager_singleton_eager_gt1_empty
 ```
 
 For example, `on.lazy_empty_singleton_gt1` has the 
