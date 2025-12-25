@@ -244,7 +244,7 @@ on.nonempty  // maps [] to []
 
 (Note that `on.true` and `on.false` are expected to get
 less use as it is somewhat unusual to want to early-return only "one half
-of a boolean". An application might be a case where
+of a boolean". But there might be a case where
 some side-effect such as printing to I/O is desired for only one
 half of a boolean value.)
 
