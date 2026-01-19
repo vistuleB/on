@@ -6,7 +6,7 @@
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
 
 ```
-gleam add on@2
+gleam add on@3
 ```
 
 The ‘on’ package consists of a collection of guards that can be 
@@ -456,6 +456,16 @@ on.eager_singleton_eager_gt1_empty          --           --
 ```
 
 ## Additional Examples
+
+```gleam
+import on
+
+fn clamp(v: Float, lower: Float, upper: Float) -> Float {
+  use <- on.eager_true_false(v <. lower, lower)
+  use <- on.eager_true_false(v >. upper, upper)
+  v
+}
+```
 
 ```gleam
 import gleam/io

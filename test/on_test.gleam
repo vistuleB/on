@@ -750,9 +750,7 @@ pub fn stay_test() {
   } == "Max"
 
   assert {
-    use name <- on.stay(
-      Stay("Max")
-    )
+    use name <- on.stay(Stay("Max"))
     name <> name
   } == "MaxMax"
 }
