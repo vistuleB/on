@@ -13,6 +13,16 @@ The ‘on’ package consists of a collection of guards that can be
 paired with Gleam's `<- use` syntax. The package replicates some functions
 from the Gleam stdlib under a uniform naming scheme.
 
+## Breaking Changes in V3.0.0
+
+The poor `type Return(a, b) { Return(a) Continue(b) }` from V1.X.Y that was
+renamed `type Return(a, b) { Return(a) Select(b) }` in V2.0.0 
+is now `type Return(a, b) { Return(a) Stay(b) }`,
+with `on.select` correspondingly renamed to `on.stay`.
+
+I will try to not beat up on this type any further at least for the next
+6 months. (Jan 2026.)
+
 ## Breaking Changes in V2.0.0
 
 V2.0.0 switches to lazy-by-default escape values. The `lazy_` prefix is no longer a thing, while
@@ -46,7 +56,7 @@ pub fn error_ok(
 With corresponding usage:
 
 ```gleam
-// 'on' consumer
+import on
 
 use ok_payload <- on.error_ok(
   some_result,
@@ -62,7 +72,7 @@ correspond to the happy path instead; per the
 consumer:
 
 ```gleam
-// 'on' consumer
+import on
 
 use error_payload <- on.ok_error(
   some_result,
@@ -96,7 +106,7 @@ on.nonempty_empty
 E.g., usage of `empty_nonempty`:
 
 ```gleam
-// 'on' consumer
+import on
 
 use first, rest <- on.empty_nonempty(
   some_list(),   // type List(a)
@@ -120,7 +130,7 @@ on.eager_empty_nonempty   // takes a value instead of a 0-ary callback for `on_e
 For example:
 
 ```gleam
-// 'on' consumer
+import on
 
 use first, rest <- on.eager_empty_nonempty(
   some_list(),   // type List(a)
@@ -154,7 +164,7 @@ pub fn eager_error_ok(
 Of usage:
 
 ```gleam
-// 'on' consumer
+import on
 
 use ok_payload <- on.eager_error_ok(some_result, None)
 
@@ -191,7 +201,7 @@ pub fn some(
 E.g.:
 
 ```gleam
-// 'on' consumer
+import on
 
 use x <- on.some(option_value)
 
@@ -218,7 +228,7 @@ pub fn ok(
 E.g.:
 
 ```gleam
-// 'on' consumer
+import on
 
 use x <- on.ok(result_value)
 
@@ -228,7 +238,7 @@ use x <- on.ok(result_value)
 
 (One can note that `on.ok` is isomorphic to `result.try` from the standard library.)
 
-Etc. The list of all 1-callback API functions, excluding `on.select`
+Etc. The list of all 1-callback API functions, excluding `on.stay`
 discussed below, is:
 
 ```gleam
@@ -297,7 +307,7 @@ pub fn empty_singleton_gt1(
 ```
 
 ```gleam
-// 'on' consumer
+import on
 
 use first, second, rest <- on.empty_singleton_gt1(
   some_list : List(a),
@@ -309,57 +319,56 @@ use first, second, rest <- on.empty_singleton_gt1(
 // down here
 ```
 
-## Generic Return/Select (previously 'Return/Continue') mechanism
+## Generic Return/Stay (previously 'Return/Continue', 'Return/Select') mechanism
 
 The package also offers a one-size-fits-all guard named
-`on.select` that consumes a value of type `Return(a, b)`, defined as:
+`on.stay` that consumes a value of type `Return(a, b)`, defined as:
 
 ```gleam
 // 'on' package
 
 pub type Return(a, b) {
   Return(a)
-  Select(b)
+  Stay(b)
 }
 ```
 
-Specifically, given a `Return(a, b)` value, `on.select`
+Specifically, given a `Return(a, b)` value, `on.stay`
 returns the `a`-payload if the value has the form `Return(a)`
 or else applies a given callback of type `f(b) -> a` to the
-`b`-payload if the value has the form `Select(b)`:
+`b`-payload if the value has the form `Stay(b)`:
 
 ```gleam
 // 'on' package
 
-pub fn select(
+pub fn stay(
   r: Return(a, b),
   on_select f: fn(b) -> a,
 ) -> a {
   case r {
     Return(a) -> a
-    Select(b) -> f(b)
+    Stay(b) -> f(b)
   }
 }
 ```
 
 This allows some many-valued variant to be sorted into
-`Return` and `Select` buckets; the restriction being that
+`Return` and `Stay` buckets; the restriction being that
 all `Return` buckets contain a payload of same type `a`, that all
-`Select` buckets contain a payload of same type `b`, and that
-the code below the `on.select` resolves
+`Stay` buckets contain a payload of same type `b`, and that
+the code below the `on.stay` resolves
 to a value of type `a`, as well:
 
 ```gleam
-// 'on' consumer
-import on.{Select, Return}
+import on
 
-use b <- on.select(
+use b <- on.stay(
   case some_5_variant_thing() {
-    Variant1(v1) -> Return( /* construct value of type a from v1 here */ )
-    Variant2(v2) -> Return( /* construct value of type a from v2 here */ )
-    Variant3(v3) -> Return( /* construct value of type a from v3 here */ )
-    Variant4(v4) -> Select( /* construct value of type b from v4 here */ )
-    Variant5(v5) -> Select( /* construct value of type b from v5 here */ )
+    Variant1(v1) -> on.Return( /* construct value of type a from v1 here */ )
+    Variant2(v2) -> on.Return( /* construct value of type a from v2 here */ )
+    Variant3(v3) -> on.Return( /* construct value of type a from v3 here */ )
+    Variant4(v4) -> on.Stay( /* construct value of type b from v4 here */ )
+    Variant5(v5) -> on.Stay( /* construct value of type b from v5 here */ )
   }
 )
 
@@ -389,7 +398,7 @@ on.true                       --                         --
 on.false                      --                         --
 on.empty                      --                         --
 on.nonempty                   --                         --
-on.select                     --                         --
+on.stay                     --                         --
 
 // 2-callback guards lazy versions:
 

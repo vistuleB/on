@@ -1,4 +1,4 @@
-import on.{Select, Return}
+import on.{Stay, Return}
 import gleeunit
 import gleam/string
 import gleam/option.{None, Some}
@@ -741,17 +741,17 @@ pub fn singleton_gt1_empty_test() {
   } == "Empty"
 }
 
-pub fn select_test() {
+pub fn stay_test() {
   assert {
-    use name <- on.select(
+    use name <- on.stay(
       Return("Max")
     )
     name <> name
   } == "Max"
 
   assert {
-    use name <- on.select(
-      Select("Max")
+    use name <- on.stay(
+      Stay("Max")
     )
     name <> name
   } == "MaxMax"

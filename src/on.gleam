@@ -1389,23 +1389,23 @@ pub fn singleton_gt1_empty(
 // ****************
 
 /// A choice type whose semantics indicate intent to return from local
-/// scope or not, to be paired with 'on.select'.
+/// scope or not, to be paired with 'on.stay'.
 pub type Return(a, b) {
   Return(a)
-  Select(b)
+  Stay(b)
 }
 
 /// Given a value of type Return(a, b) and a callback f(b) -> a, returns
-/// f(b1) if the value has the form Select(b1) and returns a1
+/// f(b1) if the value has the form Stay(b1) and returns a1
 /// if the value has the form Return(a1).
 /// 
 /// ### Example 1
 ///
 /// ```gleam
 /// let #(string1, string2) = #("bob", "")
-/// use _ <- on.select(case string {
-///   "" -> Return(#(string1, string1))
-///   _ -> Select(Nil)
+/// use _ <- on.stay(case string2 {
+///   "" -> on.Return(#(string1, string1))
+///   _ -> on.Stay(Nil)
 /// })
 /// // -> execution discontinues, scope returns #("bob", "bob")
 /// ```
@@ -1414,20 +1414,20 @@ pub type Return(a, b) {
 ///
 /// ```gleam
 /// let #(string1, string2) = #("bob", "alice")
-/// use _ <- on.select(case string {
-///   "" -> Return(#(string1, string1))
-///   _ -> Select(Nil)
+/// use _ <- on.stay(case string2 {
+///   "" -> on.Return(#(string1, string1))
+///   _ -> on.Stay(Nil)
 /// })
 /// // -> execution proceeds; the current scope must return a
 /// // #(String, String)
 /// ```
 ///
-pub fn select(
+pub fn stay(
   r: Return(a, b),
   on_select f: fn(b) -> a,
 ) -> a {
   case r {
     Return(a) -> a
-    Select(b) -> f(b)
+    Stay(b) -> f(b)
   }
 }
