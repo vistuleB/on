@@ -15,10 +15,10 @@ from the Gleam stdlib under a uniform naming scheme.
 
 ## Breaking Changes in V3.0.0
 
-The unfortunate `type Return(a, b) { Return(a) Continue(b) }` from V1.x.x that was
+The poor `type Return(a, b) { Return(a) Continue(b) }` from V1.x.x that was
 renamed `type Return(a, b) { Return(a) Select(b) }` in V2.0.0 
 is now `type Return(a, b) { Return(a) Stay(b) }`,
-with `on.select` (prev `on.continue`) correspondingly renamed to `on.stay`.
+with `on.select` correspondingly renamed to `on.stay`.
 
 I will try to not beat up on this type any further for at least the next
 6 months. (Jan 2026.)
