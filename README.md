@@ -383,7 +383,7 @@ The [given](https://github.com/inoas/gleam-given) package
 with a simpler variety of guards. (But that may lead to less
 overengineering and overthinking.)
 
-## Table: Comparison with stdlib guards and [given](https://github.com/inoas/gleam-given)
+## Table: Comparison with stdlib and [given](https://github.com/inoas/gleam-given)
 
 ```
 on                            stdlib                     given
@@ -481,7 +481,7 @@ pub fn main() -> Nil {
 
   use parse_tree <- on.error_ok(
     parse_html(rest),
-    on_error: fn(e) { println("html parse error: " <> string.inspect(e)) },
+    on_error: fn(e) { io.println("html parse error: " <> string.inspect(e)) },
   )
 
   // ...
