@@ -34,12 +34,12 @@ renamed to `on.select`. This change was made because `Select` has the same numbe
 and because the author had an irrational aesthetics-based prejudice against the `Continue`
 variant name.
 
-## API Overview
+## Overview
 
-All package functions adhere to the same pattern as:
+All 'on' functions adhere to the same pattern as:
 
 ```gleam
-// 'on' package
+// on.gleam
 
 pub fn error_ok(
   result: Result(a, b),
@@ -147,7 +147,7 @@ to replace callbacks that would take an argument with a precomputed value.
 For example `on.eager_error_ok`:
 
 ```gleam
-// 'on' package
+// on.gleam
 
 pub fn eager_error_ok(
   result: Result(a, b),
@@ -185,7 +185,7 @@ callback
 defaults to mapping a `None: Option(a)` to a `None: Option(b)`:
 
 ```gleam
-// 'on' package
+// on.gleam
 
 pub fn some(
   option: Option(a),
@@ -212,7 +212,7 @@ use x <- on.some(option_value)
 Similarly, `on.ok` only expects a callback for the `Ok` payload:
 
 ```gleam
-// 'on' package
+// on.gleam
 
 pub fn ok(
   result: Result(a, b),
@@ -290,7 +290,7 @@ For example, `on.empty_singleton_gt1` has the
 following implementation and usage:
 
 ```gleam
-// 'on' package
+// on.gleam
 
 pub fn empty_singleton_gt1(
   list: List(a),
@@ -325,7 +325,7 @@ The package also offers a one-size-fits-all guard named
 `on.stay` that consumes a value of type `Return(a, b)`, defined as:
 
 ```gleam
-// 'on' package
+// on.gleam
 
 pub type Return(a, b) {
   Return(a)
@@ -339,7 +339,7 @@ or else applies a given callback of type `f(b) -> a` to the
 `b`-payload if the value has the form `Stay(b)`:
 
 ```gleam
-// 'on' package
+// on.gleam
 
 pub fn stay(
   r: Return(a, b),
