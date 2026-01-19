@@ -398,7 +398,7 @@ on.true                       --                         --
 on.false                      --                         --
 on.empty                      --                         --
 on.nonempty                   --                         --
-on.stay                     --                         --
+on.stay                       --                         --
 
 // 2-callback guards lazy versions:
 
