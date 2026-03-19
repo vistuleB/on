@@ -97,7 +97,7 @@ pub fn error(
 ///
 pub fn eager_error_ok(
   result: Result(a, b),
-  on_error c,
+  on_error c: c,
   on_ok f2: fn(a) -> c,
 ) -> c {
   case result {

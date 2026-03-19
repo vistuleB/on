@@ -36,7 +36,7 @@ variant name.
 
 ## Overview
 
-All 'on' functions adhere to the same pattern as:
+All package functions adhere to the same pattern as:
 
 ```gleam
 // on.gleam
@@ -142,8 +142,7 @@ use first, rest <- on.eager_empty_nonempty(
 // to match the `on_empty` return value
 ```
 
-The API also offers `eager_` variants (no pun intended) for variants that payloads, as well, i.e.,
-to replace callbacks that would take an argument with a precomputed value.
+The package also offers `eager_` variants (no pun intended) for variants that have payloads.
 For example `on.eager_error_ok`:
 
 ```gleam
@@ -151,7 +150,7 @@ For example `on.eager_error_ok`:
 
 pub fn eager_error_ok(
   result: Result(a, b),
-  on_error c,
+  on_error c: c,
   on_ok f2: fn(a) -> c,
 ) -> c {
   case result {
