@@ -68,7 +68,7 @@ use ok_payload <- on.error_ok(
 // map ok_payload to return value
 ```
 
-Symmetrically, 
+E.g., symmetrically, 
 `on.ok_error` allows the `Error` variant to
 correspond to the happy path instead:
 
