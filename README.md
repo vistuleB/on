@@ -134,7 +134,7 @@ on.eager_empty_nonempty   // takes a value instead of a 0-ary callback for `on_e
 
 For example:
 
-```gleam
+<!-- ```gleam
 import on
 
 use first, rest <- on.eager_empty_nonempty(
@@ -165,7 +165,7 @@ pub fn eager_error_ok(
 }
 ```
 
-Of usage:
+Of usage: -->
 
 ```gleam
 import on
