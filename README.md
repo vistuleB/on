@@ -105,10 +105,14 @@ Values can be provided instead of callbacks by using the `eager_` prefix.
 Specifically, the call names are:
 
 ```gleam
+on.eager_error_ok         // takes a value instead of a 0-ary callback for `on_error`
+on.eager_ok_error         // takes a value instead of a 0-ary callback for `on_ok`
 on.eager_none_some        // takes a value instead of a 0-ary callback for `on_none`
+on.eager_some_none        // takes a value instead of a 0-ary callback for `on_some`
 on.eager_true_false       // takes a value instead of a 0-ary callback for `on_true`
 on.eager_false_true       // takes a value instead of a 0-ary callback for `on_false`
 on.eager_empty_nonempty   // takes a value instead of a 0-ary callback for `on_empty`
+on.eager_nonempty_empty   // takes a value instead of a 0-ary callback for `on_nonempty`
 ```
 
 E.g.:
@@ -299,7 +303,7 @@ or else applies a given callback of type `f(b) -> a` to the
 
 pub fn stay(
   r: Return(a, b),
-  on_select f: fn(b) -> a,
+  on_stay f: fn(b) -> a,
 ) -> a {
   case r {
     Return(a) -> a
@@ -343,16 +347,14 @@ use b <- on.stay(
 // or Variant5
 ```
 
-The package author has had good experience using `on.Return/on.Stay`—and can
-recommend it as a good generic tool for producing clean "vertical" (as opposed left-indented, "horizontal") code.
+*The package author has had good experience using `on.Return/on.Stay` and can
+recommend it as a generic way of producing clean "vertical" (as opposed left-indented, "horizontal") code.*
 
 ## See also
 
-The [given](https://github.com/inoas/gleam-given) package
-with a simpler variety of guards. (But that may lead to less
-overengineering and overthinking.)
+The [given](https://github.com/inoas/gleam-given) package, older and more established. See table below.
 
-## Table: Comparison with stdlib and [given](https://github.com/inoas/gleam-given)
+## Table: Comparison between `on`, `stdlib` and `given`
 
 ```
 on                            stdlib                     given

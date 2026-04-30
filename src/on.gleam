@@ -1423,7 +1423,7 @@ pub type Return(a, b) {
 ///
 pub fn stay(
   r: Return(a, b),
-  on_select f: fn(b) -> a,
+  on_stay f: fn(b) -> a,
 ) -> a {
   case r {
     Return(a) -> a
