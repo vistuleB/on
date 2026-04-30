@@ -36,7 +36,7 @@ variant name. -->
 
 ## Overview
 
-All package functions adhere to this pattern:
+All package functions adhere to the pattern:
 
 ```gleam
 // on.gleam
@@ -68,10 +68,9 @@ use ok_payload <- on.error_ok(
 // map ok_payload to return value
 ```
 
-Symmetrically, for example,
+Symmetrically, 
 `on.ok_error` allows the `Error` variant to
-correspond to the happy path instead; per the
-consumer:
+correspond to the happy path instead:
 
 ```gleam
 import on
@@ -107,13 +106,13 @@ on.empty_nonempty
 on.nonempty_empty
 ```
 
-E.g., usage of `empty_nonempty`:
+E.g., usage of `on.empty_nonempty`:
 
 ```gleam
 import on
 
 use first, rest <- on.empty_nonempty(
-  some_list(),   // type List(a)
+  some_list(),
   on_empty: fn() {
     // choose return value for empty list
   }
@@ -139,7 +138,7 @@ For example:
 import on
 
 use first, rest <- on.eager_empty_nonempty(
-  some_list(),   // type List(a)
+  some_list(),
   on_empty: Error("empty list")
 )
 
