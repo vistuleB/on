@@ -347,9 +347,6 @@ use b <- on.stay(
 // or Variant5
 ```
 
-*The package author has had good experience using `on.Return/on.Stay` and can
-recommend it as a generic way of producing clean "vertical" (as opposed left-indented, "horizontal") code.*
-
 ## See also
 
 The [given](https://github.com/inoas/gleam-given) package, older and more established. See table below.
