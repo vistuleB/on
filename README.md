@@ -132,7 +132,7 @@ on.eager_false_true       // takes a value instead of a 0-ary callback for `on_f
 on.eager_empty_nonempty   // takes a value instead of a 0-ary callback for `on_empty`
 ```
 
-For example:
+E.g.:
 
 <!-- ```gleam
 import on
