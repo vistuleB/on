@@ -134,39 +134,6 @@ on.eager_empty_nonempty   // takes a value instead of a 0-ary callback for `on_e
 
 E.g.:
 
-<!-- ```gleam
-import on
-
-use first, rest <- on.eager_empty_nonempty(
-  some_list(),
-  on_empty: Error("empty list")
-)
-
-// ...work down here with first: a and rest: List(a), in the
-// case where the list is nonempty; scope must return a 
-// Result(b, String) to match the `on_empty` return value
-```
-
-The package also offers `eager_` variants (no pun intended) for variants that have payloads.
-For example `on.eager_error_ok`:
-
-```gleam
-// on.gleam
-
-pub fn eager_error_ok(
-  result: Result(a, b),
-  on_error c: c,
-  on_ok f2: fn(a) -> c,
-) -> c {
-  case result {
-    Error(_) -> c
-    Ok(a) -> f2(a)
-  }
-}
-```
-
-Of usage: -->
-
 ```gleam
 import on
 
@@ -241,7 +208,7 @@ use x <- on.ok(result_value)
 // otherwise code has already returned Error(b)
 ```
 
-(One can note that `on.ok` is isomorphic to `result.try` from the standard library.)
+One can note that `on.ok` is isomorphic to `result.try` from the standard library.
 
 Etc. The list of all 1-callback API functions, excluding `on.stay`
 discussed below, is:
@@ -257,17 +224,17 @@ on.empty     // maps [first, ..rest] to [first, ..rest]
 on.nonempty  // maps [] to []
 ```
 
-(Note that `on.true` and `on.false` are expected to get
+Note that `on.true` and `on.false` are expected to get
 less use as it is somewhat unusual to want to early-return only "one half
-of a boolean". But there might be a case where
-some side-effect such as printing to I/O is desired for only one
-half of a boolean value.)
+of a boolean". (A possible use case might be that a
+side-effect such as printing to I/O is desired for only one
+half of a boolean value before returning.)
 
 ## Ternary guards for List(a) values
 
-*Warning. In my experience of the package author it is
-less of a headache to use `on.Return` / `on.Stay` pattern
-than to work with ternary guards, though they are available.
+*Warning. In the experience of the package author it is
+less of a headache to use the generic `on.stay` pattern
+than to work with ternary guards, though ternary guards are kept available.
 See below.*
 
 At the other end of the spectrum 'on' provides API
@@ -321,15 +288,15 @@ import on
 
 use first, second, rest <- on.empty_singleton_gt1(
   some_list : List(a),
-  fn() { /* ... */ },
-  fn(some_element: a) { /* ... */ },
+  fn() { ... },
+  fn(some_element: a) { ... },
 )
 
 // keep working with first: a, second: a, and rest: List(a)
 // down here
 ```
 
-## Generic Return/Stay (previously 'Return/Continue', 'Return/Select') mechanism
+## Generic Return/Stay mechanism
 
 The package also offers a one-size-fits-all guard named
 `on.stay` that consumes a value of type `Return(a, b)`, defined as:
