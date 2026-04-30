@@ -1418,8 +1418,7 @@ pub type Return(a, b) {
 ///   "" -> on.Return(#(string1, string1))
 ///   _ -> on.Stay(Nil)
 /// })
-/// // -> execution proceeds; the current scope must return a
-/// // #(String, String)
+/// // -> execution proceeds; the current scope must return a #(String, String)
 /// ```
 ///
 pub fn stay(

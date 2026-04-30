@@ -13,7 +13,7 @@ The ‘on’ package consists of a collection of guards that can be
 paired with Gleam's `<- use` syntax. The package replicates some functions
 from the Gleam stdlib under a uniform naming scheme.
 
-## Breaking Changes in V3.0.0
+<!-- ## Breaking Changes in V3.0.0
 
 The poor `type Return(a, b) { Return(a) Continue(b) }` from V1.x.x that was
 renamed `type Return(a, b) { Return(a) Select(b) }` in V2.0.0 
@@ -32,11 +32,11 @@ The second breaking change in V2.0.0 is that `type Return(a, b) { Return(a) Cont
 replaced by `type Return(a, b) { Return(a) Select(b) }`, with `on.continue`
 renamed to `on.select`. This change was made because `Select` has the same number of characters as `Return`
 and because the author had an irrational aesthetics-based prejudice against the `Continue`
-variant name.
+variant name. -->
 
 ## Overview
 
-All package functions adhere to the same pattern as:
+All package functions adhere to this pattern:
 
 ```gleam
 // on.gleam
@@ -60,10 +60,12 @@ import on
 
 use ok_payload <- on.error_ok(
   some_result,
-  on_error: fn (error_payload) { /* map error_payload to desired return value here */ },
+  on_error: fn(error_payload) {
+    // map error_payload to return value
+  },
 )
 
-// ...keep working with 'ok_payload' down here
+// map ok_payload to return value
 ```
 
 Symmetrically, for example,
@@ -76,10 +78,12 @@ import on
 
 use error_payload <- on.ok_error(
   some_result,
-  on_ok: fn (ok_payload) { /* map ok_payload to desired return value here */ },
+  on_ok: fn(ok_payload) {
+    // map ok_payload to return value
+  },
 )
 
-// ...keep working with 'error_payload' down here
+// map error_payload' to return value
 ```
 
 The package contains similar two-variant guards for `Bool`, `Option`
@@ -110,7 +114,9 @@ import on
 
 use first, rest <- on.empty_nonempty(
   some_list(),   // type List(a)
-  on_empty: fn() { /* create return value for empty case here */ }
+  on_empty: fn() {
+    // choose return value for empty list
+  }
 )
 
 // ...work down here with first: a and rest: List(a), in the
@@ -138,8 +144,8 @@ use first, rest <- on.eager_empty_nonempty(
 )
 
 // ...work down here with first: a and rest: List(a), in the
-// case where the list is nonempty; we must return a Result(b, String)
-// to match the `on_empty` return value
+// case where the list is nonempty; scope must return a 
+// Result(b, String) to match the `on_empty` return value
 ```
 
 The package also offers `eager_` variants (no pun intended) for variants that have payloads.
@@ -167,21 +173,22 @@ import on
 
 use ok_payload <- on.eager_error_ok(some_result, None)
 
-// ...keep working with 'ok_payload' down here,
-// while the Error case has been escaped with a None return value
-// (and this scope must return an Option(a), to match the None)
+// keep working with 'ok_payload' down here while the
+// Error case has been escaped with a None return value;
+// this scope must return an Option(a) to match the Error return type
 ```
 
 ## Single-variant shorthands
 
 Specialized API functions have names that refer to
-only one variant when the simple identity-like mapping (e.g. mapping
-`None` variant of an `Option(a)` to the `None` variant of
-an `Option(b)`) should be used for the second (elided) variant.
+only one variant when the simple identity-like mapping
+(e.g. mapping `None` variant of an `Option(a)` to the
+`None` variant of an `Option(b)`) should be used for the
+second (elided) variant.
 
-For example, `on.some` only expects one callback—the second
-callback
-defaults to mapping a `None: Option(a)` to a `None: Option(b)`:
+For example, `on.some` only expects one callback—the 
+second callback defaults to mapping a `None: Option(a)`
+to a `None: Option(b)`:
 
 ```gleam
 // on.gleam
@@ -258,6 +265,11 @@ some side-effect such as printing to I/O is desired for only one
 half of a boolean value.)
 
 ## Ternary guards for List(a) values
+
+*Warning. In my experience of the package author it is
+less of a headache to use `on.Return` / `on.Stay` pattern
+than to work with ternary guards, though they are available.
+See below.*
 
 At the other end of the spectrum 'on' provides API
 functions that take three callbacks for `List(a)` values,
@@ -363,11 +375,21 @@ import on
 
 use b <- on.stay(
   case some_5_variant_thing() {
-    Variant1(v1) -> on.Return( /* construct value of type a from v1 here */ )
-    Variant2(v2) -> on.Return( /* construct value of type a from v2 here */ )
-    Variant3(v3) -> on.Return( /* construct value of type a from v3 here */ )
-    Variant4(v4) -> on.Stay( /* construct value of type b from v4 here */ )
-    Variant5(v5) -> on.Stay( /* construct value of type b from v5 here */ )
+    Variant1(v1) -> on.Return(
+      // construct value of type a from v1 here
+    )
+    Variant2(v2) -> on.Return(
+      // construct value of type a from v2 here
+    )
+    Variant3(v3) -> on.Return(
+      // construct value of type a from v3 here
+    )
+    Variant4(v4) -> on.Stay(
+      // construct value of type b from v4 here
+    )
+    Variant5(v5) -> on.Stay(
+      // construct value of type b from v5 here
+    )
   }
 )
 
@@ -375,6 +397,9 @@ use b <- on.stay(
 // b; this code only executes if some_5_variant_thing() is Variant4
 // or Variant5
 ```
+
+The package author has had good experience using `on.Return/on.Stay`—and can
+recommend it as a good generic tool for producing clean "vertical" (as opposed left-indented, "horizontal") code.
 
 ## See also
 
