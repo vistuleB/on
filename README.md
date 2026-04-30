@@ -1,6 +1,6 @@
 # on
 
-![logo](./logo.png)
+[logo](./logo.png)
 
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
@@ -12,27 +12,6 @@ gleam add on@3
 The ‘on’ package consists of a collection of guards that can be 
 paired with Gleam's `<- use` syntax. The package replicates some functions
 from the Gleam stdlib under a uniform naming scheme.
-
-<!-- ## Breaking Changes in V3.0.0
-
-The poor `type Return(a, b) { Return(a) Continue(b) }` from V1.x.x that was
-renamed `type Return(a, b) { Return(a) Select(b) }` in V2.0.0 
-is now `type Return(a, b) { Return(a) Stay(b) }`,
-with `on.select` correspondingly renamed to `on.stay`.
-
-I will try to not beat up on this type any further for at least the next
-6 months. (Jan 2026.)
-
-## Breaking Changes in V2.0.0
-
-V2.0.0 switches to lazy-by-default escape values. The `lazy_` prefix is no longer a thing, while
-the `eager_` prefix becomes a thing.
-
-The second breaking change in V2.0.0 is that `type Return(a, b) { Return(a) Continue(b) }` has been
-replaced by `type Return(a, b) { Return(a) Select(b) }`, with `on.continue`
-renamed to `on.select`. This change was made because `Select` has the same number of characters as `Return`
-and because the author had an irrational aesthetics-based prejudice against the `Continue`
-variant name. -->
 
 ## Overview
 
@@ -82,7 +61,7 @@ use error_payload <- on.ok_error(
   },
 )
 
-// map error_payload' to return value
+// map error_payload to return value
 ```
 
 The package contains similar two-variant guards for `Bool`, `Option`
@@ -139,7 +118,7 @@ import on
 
 use ok_payload <- on.eager_error_ok(some_result, None)
 
-// keep working with 'ok_payload' down here while the
+// keep working with ok_payload down here while the
 // Error case has been escaped with a None return value;
 // this scope must return an Option(a) to match the Error return type
 ```
