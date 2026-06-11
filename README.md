@@ -434,14 +434,15 @@ on.eager_singleton_eager_gt1_empty          --           --
 
 ## Namespace advice
 
-Regarding namespace overlap
+Regarding namespace overlap between 'on' and the stdblib,
 package users may find that maximum readability is
-achieved by strictly coupling `on.` function calls
-with `use <-` syntax while reverting to standard stdlib calls
-everywhere else, when such stdblib calls are available.
-(E.g., `|> result.try` is preferred
+achieved by strictly coupling `on` calls
+with appearances of `use <-` while reverting to standard stdlib calls
+everywhere else, when such equivalents are available.
+
+E.g., `|> result.try` is preferred
 over `|> on.ok`, but `use ok_payload <- on.ok(result)`
-is preferred over `use ok_payload <- result.try(result)`.)
+is preferred over `use ok_payload <- result.try(result)`.
 
 <!-- using the `on.` version of functions that
 also appear in the stdlib anytime `use <-` syntax is being used,
