@@ -20,7 +20,7 @@ from the Gleam stdlib under a uniform naming scheme.
 
 ## Overview
 
-All package functions adhere to the pattern:
+All package functions adhere to a similar pattern as:
 
 ```gleam
 // on.gleam
