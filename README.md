@@ -13,9 +13,10 @@ gleam add on@3
 
 The ‘on’ package consists of a collection of guards that can be 
 paired with Gleam's `<- use` syntax. The package replicates some functions
-from the Gleam stdlib under a uniform naming scheme.
+from the Gleam stdlib under a uniform naming scheme. Similar to the [given](https://hex.pm/packages/given) package, but with 
+a slightly different API.
 
-[Jump to comparison table.](#table-comparison-between-on-stdlib-and-given)
+[Comparison table.](#table-comparison-between-on-stdlib-and-given)
 
 ## Overview
 
@@ -351,9 +352,9 @@ use b <- on.stay(
 // or Variant5
 ```
 
-## See also
+<!-- ## See also
 
-The [given](https://hex.pm/packages/given) package, offering similar functionality with a slightly different API.
+The [given](https://hex.pm/packages/given) package, offering similar functionality with a slightly different API. -->
 
 ## Table: Comparison between `on`, `stdlib` and `given`
 
@@ -484,19 +485,19 @@ type CSSUnit {
 }
 
 fn extract_css_unit(s: String) -> #(String, Option(CSSUnit)) {
-  use <- on.eager_true_false(
+  use <- on.true_false(
     string.ends_with(s, "rem"),
-    on_true: #(string.drop_end(s, 3), Some(REM)),
+    fn() { #(string.drop_end(s, 3), Some(REM)) },
   )
 
-  use <- on.eager_true_false(
+  use <- on.true_false(
     string.ends_with(s, "em"),
-    on_true: #(string.drop_end(s, 2), Some(EM)),
+    fn() { #(string.drop_end(s, 2), Some(EM)) },
   )
 
-  use <- on.eager_true_false(
+  use <- on.true_false(
     string.ends_with(s, "px"),
-    on_true: #(string.drop_end(s, 2), Some(PX)),
+    fn() { #(string.drop_end(s, 2), Some(PX)) },
   )
 
   #(s, None)
