@@ -1,6 +1,8 @@
 # on
 
-![logo](./logo.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/vistuleB/on/main/logo.svg" alt="Gleam On Package Logo" style="max-height:20vh;width:auto;height:auto" height="350"/>
+</p>
 
 [![Package Version](https://img.shields.io/hexpm/v/on)](https://hex.pm/packages/on)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/on/)
@@ -351,7 +353,7 @@ use b <- on.stay(
 
 ## See also
 
-The [given](https://github.com/inoas/gleam-given) package, older and more established. See table below.
+The [given](https://hex.pm/packages/given) package, offering similar functionality with a slightly different API.
 
 ## Table: Comparison between `on`, `stdlib` and `given`
 
