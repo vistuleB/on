@@ -432,7 +432,7 @@ on.eager_empty_eager_gt1_singleton          --           --
 on.eager_singleton_eager_gt1_empty          --           --
 ```
 
-## Author's namespace advice
+## Author's milquetoast namespace advice
 
 <!-- Regarding namespace overlap between `on` and the stdlib package  -->
 Users may find that maximum readability is
