@@ -432,11 +432,11 @@ on.eager_empty_eager_gt1_singleton          --           --
 on.eager_singleton_eager_gt1_empty          --           --
 ```
 
-## Advice on `on.ok` vs. `result.try`, etc
+## Namespace advice
 
 Package users may find that maximum code readability is
 achieved by using the `on.` version of functions that
-also appear in the stdlib everywhere `use <-` syntax is used,
+also appear in the stdlib with `use <-`,
 while sticking to the standard stdlib names everywhere else.
 (E.g., `|> result.try`, but `use ... <- on.ok(...)`.)
 
