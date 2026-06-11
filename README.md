@@ -438,7 +438,7 @@ on.eager_singleton_eager_gt1_empty          --           --
 <!-- Regarding namespace overlap between `on` and the stdlib package  -->
 Users may find that maximum readability is
 achieved by coupling `on.` calls
-to the `use <-` syntax while reverting to stdlib calls
+to the `use <-` syntax while otherwise reverting to stdlib calls
 when an stdlib equivalent is available.
 (E.g., prefer `|> result.try` over `|> on.ok`.)
 
