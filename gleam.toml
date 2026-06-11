@@ -1,5 +1,5 @@
 name = "on"
-version = "3.0.4"
+version = "3.0.5"
 description = "Pattern-matching in functional form on the core Gleam types."
 licences = ["MIT"]
 repository = { type = "github", user = "vistuleB", repo = "on" }

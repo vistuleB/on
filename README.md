@@ -13,9 +13,9 @@ gleam add on@3
 
 The ‘on’ package consists of a collection of guards that can be 
 paired with Gleam's `<- use` syntax. The package replicates some functions
-from the Gleam stdlib under a uniform naming scheme. Alternative to the [given](https://hex.pm/packages/given) package.
+from the Gleam stdlib under a uniform naming scheme. Alternative to [given](https://hex.pm/packages/given).
 
-[Jump to comparison table.](#table-comparison-between-on-stdlib-and-given)
+[API digest.](#table-comparison-between-on-stdlib-and-given)
 
 ## Overview
 
@@ -439,6 +439,7 @@ Users may find that maximum readability is
 achieved by coupling `on.` calls
 to the `use <-` syntax while reverting to stdlib calls
 when an stdlib equivalent is available.
+(E.g., prefer `|> result.try` over `|> on.ok`.)
 
 <!-- E.g., `|> option.then` would be preferred
 over `|> on.some` while `use x <- on.some(y)`
