@@ -441,9 +441,8 @@ to the `use <-` syntax while reverting to stdlib calls
 everywhere else an stdlib equivalent is available.
 
 E.g., `|> option.then` would be preferred
-over `|> on.some` even while `use x <- on.some(y)`
-might be preferred over `use x <- option.then(y)` in
-other parts of the codebase.
+over `|> on.some` while `use x <- on.some(y)`
+would be preferred over `use x <- option.then(y)`.
 
 ## Additional Examples
 
