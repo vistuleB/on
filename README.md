@@ -434,15 +434,15 @@ on.eager_singleton_eager_gt1_empty          --           --
 
 ## Author's namespace advice
 
-Regarding namespace overlap between `on` and the stdlib
-package users may find that maximum readability is
-achieved by strictly coupling `on.` calls
+<!-- Regarding namespace overlap between `on` and the stdlib package  -->
+Users may find that maximum readability is
+achieved by coupling `on.` calls
 to the `use <-` syntax while reverting to stdlib calls
-everywhere else an stdlib equivalent is available.
+when an stdlib equivalent is available.
 
-E.g., `|> option.then` would be preferred
+<!-- E.g., `|> option.then` would be preferred
 over `|> on.some` while `use x <- on.some(y)`
-would be preferred over `use x <- option.then(y)`.
+would be preferred over `use x <- option.then(y)`. -->
 
 ## Additional Examples
 

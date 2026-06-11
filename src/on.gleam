@@ -1389,7 +1389,7 @@ pub fn singleton_gt1_empty(
 // ****************
 
 /// A choice type whose semantics indicate intent to return from local
-/// scope or not, to be paired with 'on.stay'.
+/// scope or not, to be paired with [on.stay](#stay).
 pub type Return(a, b) {
   Return(a)
   Stay(b)
