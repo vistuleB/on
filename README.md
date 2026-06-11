@@ -316,12 +316,12 @@ pub fn stay(
 }
 ```
 
-This allows some many-valued variant to be sorted into
-`Return` and `Stay` buckets; the restriction being that
+This allows arbitrary logic to be sorted into
+`Return` and `Stay` buckets. The restriction being that
 all `Return` buckets contain a payload of same type `a`, that all
 `Stay` buckets contain a payload of same type `b`, and that
 the code below the `on.stay` resolves
-to a value of type `a`, as well:
+to a value of type `a`, as well. E.g.:
 
 ```gleam
 import on
