@@ -432,7 +432,7 @@ on.eager_empty_eager_gt1_singleton          --           --
 on.eager_singleton_eager_gt1_empty          --           --
 ```
 
-## Namespace advice
+## Author's namespace advice
 
 Regarding namespace overlap between `on` and the stdlib
 package users may find that maximum readability is
@@ -441,7 +441,7 @@ to the `use <-` syntax while reverting to stdlib calls
 everywhere else an stdlib equivalent is available.
 
 E.g., `|> result.try` would be preferred
-over `|> on.ok` while `use ok_payload <- on.ok(result)`
+over `|> on.ok` even while `use ok_payload <- on.ok(result)`
 might be preferred over `use ok_payload <- result.try(result)`.
 
 ## Additional Examples
