@@ -319,8 +319,8 @@ pub fn stay(
 This allows arbitrary logic to be sorted into
 `Return` and `Stay` buckets. The restriction being that
 all `Return` buckets must contain payloads of the same
-type, that all `Stay` buckets must also contain payloads
-as the same type as one another, and that the code below
+type, likewise that all `Stay` buckets must contain payloads
+of the same type, and that the code below
 `on.stay` resolve to a value of same type as contained in
 the `Return` buckets. E.g.:
 <!-- contain a payload of same type `a`, that all
