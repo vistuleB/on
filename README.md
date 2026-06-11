@@ -322,7 +322,7 @@ This allows arbitrary logic to be sorted into
 all `Return` buckets must contain payloads of the same
 type and that likewise all `Stay` buckets must contain payloads
 of some other same type, while the code below
-`on.stay` must resolve to a value of same type as contained in
+`on.stay` must resolve to a value of the type contained in
 the `Return` buckets. E.g.:
 <!-- contain a payload of same type `a`, that all
 `Stay` buckets contain a payload of same type `b`, and that
