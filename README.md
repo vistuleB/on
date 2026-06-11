@@ -13,6 +13,8 @@ The ‘on’ package consists of a collection of guards that can be
 paired with Gleam's `<- use` syntax. The package replicates some functions
 from the Gleam stdlib under a uniform naming scheme.
 
+[Jump to comparison table.](#table-comparison-between-on-stdlib-and-given)
+
 ## Overview
 
 All package functions adhere to the pattern:
@@ -105,14 +107,14 @@ Values can be provided instead of callbacks by using the `eager_` prefix.
 Specifically, the call names are:
 
 ```gleam
-on.eager_error_ok         // takes a value instead of a 0-ary callback for `on_error`
-on.eager_ok_error         // takes a value instead of a 0-ary callback for `on_ok`
+on.eager_error_ok         // takes a value instead of a 1-ary callback for `on_error`
+on.eager_ok_error         // takes a value instead of a 1-ary callback for `on_ok`
 on.eager_none_some        // takes a value instead of a 0-ary callback for `on_none`
-on.eager_some_none        // takes a value instead of a 0-ary callback for `on_some`
+on.eager_some_none        // takes a value instead of a 1-ary callback for `on_some`
 on.eager_true_false       // takes a value instead of a 0-ary callback for `on_true`
 on.eager_false_true       // takes a value instead of a 0-ary callback for `on_false`
 on.eager_empty_nonempty   // takes a value instead of a 0-ary callback for `on_empty`
-on.eager_nonempty_empty   // takes a value instead of a 0-ary callback for `on_nonempty`
+on.eager_nonempty_empty   // takes a value instead of a 2-ary callback for `on_nonempty`
 ```
 
 E.g.:
@@ -124,7 +126,7 @@ use ok_payload <- on.eager_error_ok(some_result, None)
 
 // keep working with ok_payload down here while the
 // Error case has been escaped with a None return value;
-// this scope must return an Option(a) to match the Error return type
+// this scope must return an Option(a) to match the on_error return type
 ```
 
 ## Single-variant shorthands
