@@ -438,16 +438,11 @@ Regarding namespace overlap between `on` and the stdlib
 package users may find that maximum readability is
 achieved by strictly coupling `on` calls
 to the `use <-` syntax while reverting to stdlib calls
-everywhere else, when an stdlib equivalent is available.
+everywhere else an stdlib equivalent is available.
 
 E.g., `|> result.try` would be preferred
-over `|> on.ok` even if `use ok_payload <- on.ok(result)`
+over `|> on.ok` while `use ok_payload <- on.ok(result)`
 might be preferred over `use ok_payload <- result.try(result)`.
-
-<!-- using the `on.` version of functions that
-also appear in the stdlib anytime `use <-` syntax is being used,
-while sticking to the standard stdlib names everywhere else.
-(E.g., `|> result.try` but `use ok_payload <- on.ok(result)`.) -->
 
 ## Additional Examples
 
