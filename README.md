@@ -436,9 +436,9 @@ on.eager_singleton_eager_gt1_empty          --           --
 
 Package users may find that maximum code readability is
 achieved by using the `on.` version of functions that
-also appear in the stdlib with `use <-`,
+also appear in the stdlib with `use <-` syntax,
 while sticking to the standard stdlib names everywhere else.
-(E.g., `|> result.try`, but `use ... <- on.ok(...)`.)
+(E.g., `|> result.try` but `use ok_payload <- on.ok(result)`.)
 
 ## Additional Examples
 
