@@ -220,7 +220,7 @@ half of a boolean value before returning.)
 ## Ternary guards for List(a) values
 
 *Warning. In the experience of the package author it is
-less of a headache to use the generic `on.stay` pattern (described below)
+less of a headache to use the generic `on.stay` pattern described below
 than to work with ternary guards, though ternary guards
 are included for completeness.*
 
